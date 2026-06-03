@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>共立映像搬入出予定</title>
+
+<style>
+
+body{
+  margin:0;
+  background:#0d1117;
+  color:white;
+font-family:
+"Segoe UI Emoji",
+"Apple Color Emoji",
+"Noto Color Emoji",
+"Meiryo",
+sans-serif;
+  overflow:hidden;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#161b22;
+  padding:20px 40px;
+}
+
+.logo{
+  font-size:56px;
+  font-weight:bold;
+}
+
+.clock{
+  font-size:64px;
+  font-weight:bold;
+}
+
+.main{
+  display:grid;
+  grid-template-columns:70% 30%;
+  height:calc(100vh - 180px);
+}
+
+.left{
+  padding:20px 40px;
+}
+
+.right{
+  padding:15px;
+}
+
+.title{
+  font-size:48px;
+  border-bottom:none;
+  padding-bottom:10px;
+  margin-bottom:20px;
+}
+
+.schedule-row{
+  display:grid;
+  grid-template-columns:180px 360px 360px 240px;
+  font-size:48px;
+  font-weight:bold;
+  margin-bottom:12px;
+  align-items:center;
+
+  background:#161b22;
+  border-left:8px solid #2563eb;
+  border-radius:10px;
+  padding:12px 20px;
+}
+
+.schedule-row:nth-child(odd){
+  background:#1a1f28;
+}
+
+.schedule-row:nth-child(even){
+  background:#202734;
+}
+
+
+.card{
+  background:#161b22;
+  border-radius:12px;
+  padding:25px;
+  margin-bottom:20px;
+  position:relative;
+}
+
+.card-title{
+  font-size:36px;
+  margin-bottom:15px;
+  border-bottom:1px solid #444;
+  padding-bottom:10px;
+}
+
+.visitor-row{
+  font-size:28px;
+  margin-bottom:12px;
+}
+
+#weather{
+  text-align:center;
+  margin-top:0;
+}
+
+.notice{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:60px;
+  background:#2563eb;
+  display:flex;
+}
+
+.notice-title{
+  width:180px;
+  background:#1d4ed8;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:30px;
+  font-weight:bold;
+}
+
+.notice-scroll{
+  flex:1;
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+.notice-text{
+  display:inline-block;
+  padding-left:100%;
+  line-height:60px;
+  font-size:28px;
+  animation:scroll 25s linear infinite;
+}
+
+@keyframes scroll{
+  from{
+    transform:translateX(0);
+  }
+  to{
+    transform:translateX(-100%);
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+  <div class="logo" id="company">
+    今日の搬入出予定
+  </div>
+
+  <div class="clock" id="clock">
+  </div>
+
+</div>
+
+<div class="main">
+
+  <div class="left">
+
+    <div class="title" id="scheduleTitle">
+    </div>
+
+    <div id="schedule">
+    </div>
+
+  </div>
+
+<div class="right">
+
+  <div class="card" id="weatherCard">
+    <div id="weather">
+      読み込み中...
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="card-title">
+      納品・引取
+    </div>
+
+    <div id="visitors">
+    </div>
+
+  </div>
+
+</div>
+
+<div class="notice">
+
+  <div class="notice-title">
+    information
+  </div>
+
+  <div class="notice-scroll">
+
+    <div
+      class="notice-text"
+      id="notice">
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzLzxEDv6Xnxi8il-_ByLJoyUctKGJBjp4sZ4yLovd017Fhjj8Jo_nmWD8EG5HAw3hIIg/exec";
+
+function updateClock(){
+
+  const now = new Date();
+
+  const week = ["日","月","火","水","木","金","土"];
+
+  document.getElementById("clock").innerHTML =
+    now.getFullYear() + "年" +
+    (now.getMonth()+1) + "月" +
+    now.getDate() + "日(" +
+    week[now.getDay()] + ") " +
+    now.toLocaleTimeString("ja-JP");
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+function getWeatherText(code){
+
+  const map = {
+    0:"☀ 快晴",
+    1:"🌤 晴れ",
+    2:"⛅ 晴れ時々曇り",
+    3:"☁ 曇り",
+    45:"🌫 霧",
+    48:"🌫 濃霧",
+    51:"🌦 小雨",
+    61:"🌧 雨",
+    63:"🌧 強い雨",
+    71:"❄ 雪",
+    80:"🌦 にわか雨",
+    95:"⛈ 雷雨"
+  };
+
+  return map[code] || "天候不明";
+}
+
+function getWeatherIcon(code){
+
+  if(code == 0) return "☀";
+  if(code <= 2) return "🌤";
+  if(code == 3) return "☁";
+  if(code >= 51 && code <= 67) return "🌧";
+  if(code >= 71 && code <= 77) return "❄";
+  if(code >= 80) return "🌦";
+
+  return "？";
+}
+
+async function loadWeather(){
+
+  const url =
+    "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&forecast_days=8";
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+let weekWeather = "";
+
+const weekNames = [
+  "日","月","火","水","木","金","土"
+];
+
+for(let i=0;i<=6;i++){
+
+  const date = new Date(
+    data.daily.time[i]
+  );
+
+const day = date.getDay();
+
+let dayColor = "#cccccc";
+
+if(day === 0){
+  dayColor = "#ff8080";
+}
+else if(day === 6){
+  dayColor = "#80aaff";
+}
+
+  weekWeather += `
+    <div style="
+      display:inline-block;
+      width:60px;
+      text-align:center;
+      vertical-align:top;
+      margin:0 3px;
+    ">
+
+      <div style="
+        font-size:18px;
+      ">
+        ${date.getMonth()+1}/${date.getDate()}
+      </div>
+
+<div style="
+  font-size:16px;
+  color:${dayColor};
+">
+  (${weekNames[day]})
+</div>
+
+<div style="
+  font-size:36px;
+  margin-top:4px;
+">
+  ${getWeatherIcon(
+    data.daily.weather_code[i]
+  )}
+</div>
+
+<div style="
+  font-size:14px;
+  margin-top:2px;
+  color:#ff8a80;
+">
+  ${Math.round(
+    data.daily.temperature_2m_max[i]
+  )}°
+</div>
+
+<div style="
+  font-size:14px;
+  color:#80caff;
+">
+  ${Math.round(
+    data.daily.temperature_2m_min[i]
+  )}°
+</div>
+
+    </div>
+  `;
+
+}
+
+document.getElementById("weather").innerHTML = `
+
+<div style="
+  font-size:24px;
+  font-weight:bold;
+  color:#9ca3af;
+  margin-bottom:15px;
+">
+  週間天気予報
+</div>
+
+<div style="
+  display:flex;
+  justify-content:center;
+  gap:10px;
+">
+  ${weekWeather}
+</div>
+
+`;
+}
+
+
+async function loadData(){
+
+  const res = await fetch(API_URL);
+  const data = await res.json();
+
+const now = new Date();
+
+const week = ["日","月","火","水","木","金","土"];
+
+document.getElementById("clock").innerHTML =
+  now.getFullYear() + "年" +
+  (now.getMonth()+1) + "月" +
+  now.getDate() + "日(" +
+  week[now.getDay()] + ") " +
+  now.toLocaleTimeString("ja-JP");
+
+//  document.getElementById("scheduleTitle").innerHTML =
+//    now.getFullYear() + "年" +
+//    (now.getMonth()+1) + "月" +
+//    now.getDate() + "日(" +
+//    week[now.getDay()] + ")" +
+//    " 搬入出予定";
+
+  let scheduleHtml = "";
+
+data.schedule
+  .slice(0,10)
+  .forEach(item=>{
+
+    scheduleHtml += `
+      <div class="schedule-row">
+<div>${
+  item.time === "23:59"
+    ? "未定"
+    : item.time
+}</div>
+        <div>${item.project}</div>
+        <div>${item.content}</div>
+        <div>${item.vehicle}</div>
+      </div>
+    `;
+
+  });
+
+  document.getElementById("schedule").innerHTML =
+    scheduleHtml;
+
+  let visitorsHtml = "";
+
+data.visitors
+  .slice(0,8)
+  .forEach(item=>{
+
+    visitorsHtml += `
+      <div class="visitor-row">
+${
+  item.time === "23:59"
+    ? "未定"
+    : item.time
+}
+${item.guest}
+(${item.person})
+      </div>
+    `;
+
+  });
+
+if(visitorsHtml === ""){
+  visitorsHtml = `
+    <div class="visitor-row">
+      本日の予定はありません
+    </div>
+  `;
+}
+
+  document.getElementById("visitors").innerHTML =
+    visitorsHtml;
+
+  let noticeText = "";
+
+  data.notices.forEach(item=>{
+
+    noticeText += "　　" + item.text;
+
+  });
+
+if(noticeText === ""){
+  noticeText = "連絡事項はありません";
+}
+
+  document.getElementById("notice").innerHTML =
+    noticeText;
+
+}
+
+loadData();
+loadWeather();
+
+setInterval(loadData,30000);
+setInterval(loadWeather,600000);
+
+</script>
+
+</body>
+</html>
