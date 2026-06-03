@@ -60,28 +60,20 @@ sans-serif;
   margin-bottom:20px;
 }
 
-//.schedule-row{
-//  display:grid;
-//  grid-template-columns:180px 360px 360px 240px;
-//  font-size:48px;
-//  font-weight:bold;
-//  margin-bottom:12px;
-//  align-items:center;
-
-//  background:#161b22;
-//  border-left:8px solid #2563eb;
-//  border-radius:10px;
-//  padding:12px 20px;
-//}
-
 .schedule-row{
   display:grid;
-  grid-template-columns:12% 33% 33% 22%;
-  font-size:42px;
+  grid-template-columns:180px 360px 360px 240px;
+  font-size:48px;
   font-weight:bold;
-  margin-bottom:20px;
+  margin-bottom:12px;
   align-items:center;
+
+  background:#161b22;
+  border-left:8px solid #2563eb;
+  border-radius:10px;
+  padding:12px 20px;
 }
+
 
 .schedule-row:nth-child(odd){
   background:#1a1f28;
@@ -161,48 +153,35 @@ sans-serif;
   }
 }
 
-@media screen and (max-width:1200px){
-
-  .header{
-    padding:15px 20px;
-  }
+@media screen and (max-width:1400px){
 
   .logo{
-    font-size:40px;
+    font-size:38px;
   }
 
   .clock{
-    font-size:42px;
-  }
-
-  .left{
-    padding:10px 15px;
-  }
-
-  .right{
-    padding:10px;
+    font-size:38px;
   }
 
   .schedule-row{
-    grid-template-columns:12% 33% 33% 22%;
-    font-size:32px;
-    margin-bottom:12px;
+    font-size:28px;
+    grid-template-columns:120px 220px 220px 140px;
   }
 
   .card-title{
-    font-size:28px;
+    font-size:26px;
   }
 
   .visitor-row{
-    font-size:22px;
+    font-size:20px;
   }
 
   .notice-title{
-    font-size:24px;
+    font-size:22px;
   }
 
   .notice-text{
-    font-size:22px;
+    font-size:20px;
   }
 
 }
@@ -398,7 +377,7 @@ else if(day === 6){
 ">
   ${Math.round(
     data.daily.temperature_2m_max[i]
-  )}°
+  )}℃
 </div>
 
 <div style="
@@ -407,7 +386,7 @@ else if(day === 6){
 ">
   ${Math.round(
     data.daily.temperature_2m_min[i]
-  )}°
+  )}℃
 </div>
 
     </div>
