@@ -48,7 +48,7 @@ body{
 
 .main{
   display:grid;
-  grid-template-columns:70% 30%;
+  grid-template-columns:65% 35%;
   height:calc(100vh - 120px);
 }
 
@@ -179,27 +179,28 @@ body{
 .notice-scroll{
   flex:1;
   overflow:hidden;
-  white-space:nowrap;
+  position:relative;
 }
 
 .notice-text{
-  display:inline-block;
+  position:absolute;
   white-space:nowrap;
   line-height:60px;
   font-size:18px;
-  padding-left:20px;
-  animation:scroll 40s linear infinite;
+  animation:scroll 30s linear infinite;
 }
 
 @keyframes scroll{
-  from{
-    transform:translateX(100%);
+
+  0%{
+    transform:translateX(100vw);
   }
-  to{
+
+  100%{
     transform:translateX(-100%);
   }
-}
 
+}
 @media screen and (max-width:1400px){
 
   .logo{
