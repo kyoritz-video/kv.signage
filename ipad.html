@@ -47,32 +47,20 @@ body{
 }
 
 .main{
-  display:flex;
-  flex-direction:column;
+  display:grid;
+  grid-template-columns:75% 25%;
   height:calc(100vh - 120px);
 }
 
 .left{
-  padding:20px 40px;
-  flex:1;
+  padding:15px 25px;
   overflow:hidden;
 }
 
 .right{
   padding:15px;
   display:flex;
-  gap:15px;
-  align-items:stretch;
-}
-
-.visitor-card{
-  width:35%;
-  margin-bottom:0;
-}
-
-.weather-card{
-  width:65%;
-  margin-bottom:0;
+  flex-direction:column;
 }
 
 .title{
@@ -84,8 +72,8 @@ body{
 
 .schedule-row{
   display:grid;
-  grid-template-columns:90px 220px 160px 100px;
-  font-size:26px;
+  grid-template-columns:90px 320px 220px 100px;
+  font-size:28px;
   font-weight:bold;
   margin-bottom:12px;
   align-items:center;
@@ -134,14 +122,6 @@ body{
   background:#202734;
 }
 
-.visitor-card{
-  flex:0.8;
-}
-
-.weather-card{
-  flex:1.2;
-}
-
 .card{
   background:#161b22;
   border-radius:12px;
@@ -163,8 +143,7 @@ body{
 }
 
 #schedule{
-  height:100%;
-  overflow-y:auto;
+  animation:autoScroll 60s linear infinite;
 }
 
 #visitors{
@@ -285,6 +264,14 @@ body{
 
 <div class="right">
 
+  <div class="card weather-card">
+
+    <div id="weather">
+      読み込み中...
+    </div>
+
+  </div>
+
   <div class="card visitor-card">
 
     <div class="card-title">
@@ -296,16 +283,7 @@ body{
 
   </div>
 
-  <div class="card weather-card">
-
-    <div id="weather">
-      読み込み中...
-    </div>
-
-  </div>
-
 </div>
-
 <div class="notice">
 
 <div class="notice-title">
@@ -412,7 +390,7 @@ else if(day === 6){
   weekWeather += `
     <div style="
       display:inline-block;
-      width:50px;
+      width:45px;
       text-align:center;
       vertical-align:top;
       margin:0 3px;
@@ -513,7 +491,7 @@ document.getElementById("clock").innerHTML =
   let scheduleHtml = "";
 
 data.schedule
-  .slice(0,10)
+  .slice(0,8)
   .forEach(item=>{
 
     scheduleHtml += `
