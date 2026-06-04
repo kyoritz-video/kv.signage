@@ -534,6 +534,24 @@ data.schedule
 
   });
 
+if(scheduleHtml === ""){
+
+  scheduleHtml = `
+    <div style="
+      height:65vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:56px;
+      font-weight:bold;
+      color:#6b7280;
+    ">
+      本日の搬入出予定はありません
+    </div>
+  `;
+
+}
+
   document.getElementById("schedule").innerHTML =
     scheduleHtml;
 
