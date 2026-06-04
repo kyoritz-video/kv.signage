@@ -178,8 +178,24 @@ body{
 
 .notice-scroll{
   flex:1;
-  overflow:hidden;
   position:relative;
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+.notice-scroll::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:40px;
+  height:100%;
+  z-index:5;
+  background:linear-gradient(
+    to right,
+    #2563eb,
+    rgba(37,99,235,0)
+  );
 }
 
 .notice-text{
