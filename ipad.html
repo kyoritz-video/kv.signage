@@ -54,10 +54,25 @@ body{
 
 .left{
   padding:20px 40px;
+  flex:1;
+  overflow:hidden;
 }
 
 .right{
   padding:15px;
+  display:flex;
+  gap:15px;
+  align-items:stretch;
+}
+
+.visitor-card{
+  width:35%;
+  margin-bottom:0;
+}
+
+.weather-card{
+  width:65%;
+  margin-bottom:0;
 }
 
 .title{
@@ -69,7 +84,7 @@ body{
 
 .schedule-row{
   display:grid;
-  grid-template-columns:90px 150px 150px 100px;
+  grid-template-columns:90px 220px 160px 100px;
   font-size:26px;
   font-weight:bold;
   margin-bottom:12px;
@@ -81,6 +96,35 @@ body{
   padding:12px 20px;
 }
 
+.project-cell{
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+.project-scroll{
+  display:inline-block;
+  white-space:nowrap;
+}
+
+.project-scroll.animate{
+  animation:projectScroll 15s linear infinite;
+}
+
+@keyframes projectScroll{
+
+  0%{
+    transform:translateX(0);
+  }
+
+  20%{
+    transform:translateX(0);
+  }
+
+  100%{
+    transform:translateX(-50%);
+  }
+
+}
 
 .schedule-row:nth-child(odd){
   background:#1a1f28;
@@ -90,6 +134,13 @@ body{
   background:#202734;
 }
 
+.visitor-card{
+  flex:0.8;
+}
+
+.weather-card{
+  flex:1.2;
+}
 
 .card{
   background:#161b22;
@@ -111,6 +162,11 @@ body{
   margin-bottom:12px;
 }
 
+#schedule{
+  height:100%;
+  overflow-y:auto;
+}
+
 #visitors{
   min-height:60px;
 }
@@ -130,8 +186,17 @@ body{
 }
 
 .notice-title{
-  display:none;
+  width:220px;
+  background:#1d4ed8;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:28px;
+  font-weight:bold;
 }
+
 .notice-scroll{
   flex:1;
   overflow:hidden;
@@ -140,15 +205,16 @@ body{
 
 .notice-text{
   display:inline-block;
-  padding-left:100%;
+  white-space:nowrap;
   line-height:60px;
   font-size:18px;
-  animation:scroll 25s linear infinite;
+  padding-left:20px;
+  animation:scroll 40s linear infinite;
 }
 
 @keyframes scroll{
   from{
-    transform:translateX(0);
+    transform:translateX(100%);
   }
   to{
     transform:translateX(-100%);
@@ -219,13 +285,7 @@ body{
 
 <div class="right">
 
-  <div class="card" id="weatherCard">
-    <div id="weather">
-      読み込み中...
-    </div>
-  </div>
-
-  <div class="card">
+  <div class="card visitor-card">
 
     <div class="card-title">
       納品・引取
@@ -236,13 +296,21 @@ body{
 
   </div>
 
+  <div class="card weather-card">
+
+    <div id="weather">
+      読み込み中...
+    </div>
+
+  </div>
+
 </div>
 
 <div class="notice">
 
-  <div class="notice-title">
-    information
-  </div>
+<div class="notice-title">
+  information
+</div>
 
   <div class="notice-scroll">
 
@@ -455,7 +523,11 @@ data.schedule
     ? "未定"
     : item.time
 }</div>
-        <div>${item.project}</div>
+<div class="project-cell">
+  <div class="project-scroll">
+    ${item.project}
+  </div>
+</div>
         <div>${item.content}</div>
         <div>${item.vehicle}</div>
       </div>
@@ -465,6 +537,24 @@ data.schedule
 
   document.getElementById("schedule").innerHTML =
     scheduleHtml;
+
+document
+  .querySelectorAll(".project-scroll")
+  .forEach(el => {
+
+    if(el.scrollWidth > el.parentElement.clientWidth){
+
+      el.innerHTML =
+        el.innerHTML +
+        "　　　" +
+        el.innerHTML;
+
+      el.classList.add("animate");
+
+    }
+
+  });
+
 
   let visitorsHtml = "";
 
