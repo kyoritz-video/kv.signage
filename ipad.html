@@ -212,15 +212,12 @@ body{
 }
 
 @keyframes scroll{
-
-  0%{
+  from{
     transform:translateX(0);
   }
-
-  100%{
-    transform:translateX(calc(-100vw - 100%));
+  to{
+    transform:translateX(calc(-100% - 220px));
   }
-
 }
 
 @media screen and (max-width:1400px){
