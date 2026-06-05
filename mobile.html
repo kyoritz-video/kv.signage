@@ -127,6 +127,10 @@ function updateClock(){
 
 async function loadData(){
 
+
+  document.getElementById("schedule").innerHTML =
+    '<div class="no-data">読み込み中...</div>';
+
   const res = await fetch(API_URL);
   const data = await res.json();
 
