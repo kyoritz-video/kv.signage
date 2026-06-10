@@ -79,6 +79,12 @@ body{
   color:#9ca3af;
 }
 
+.driver{
+  margin-top:5px;
+  font-size:15px;
+  color:#facc15;
+}
+
 .no-data{
   height:70vh;
   display:flex;
@@ -170,6 +176,10 @@ async function loadData(){
           <div class="vehicle">
             ${item.vehicle}
           </div>
+
+	  <div class="driver">
+	    ${item.driver || ""}
+	  </div>
 
         </div>
       `;
