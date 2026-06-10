@@ -46,11 +46,11 @@ sans-serif;
 }
 
 .left{
-  padding:20px 40px;
+  padding:20px 20px 20px 30px;
 }
 
 .right{
-  padding:15px;
+  padding:5px 5px 5px 0;
 }
 
 .title{
@@ -62,8 +62,17 @@ sans-serif;
 
 .schedule-row{
   display:grid;
-  grid-template-columns:180px 360px 360px 240px;
-  font-size:48px;
+
+  grid-template-columns:
+    8%
+    24%
+    20%
+    23%
+    25%;
+
+  column-gap:10px;
+
+  font-size:40px;
   font-weight:bold;
   margin-bottom:12px;
   align-items:center;
@@ -71,7 +80,17 @@ sans-serif;
   background:#161b22;
   border-left:8px solid #2563eb;
   border-radius:10px;
-  padding:12px 20px;
+  padding:12px 10px;
+}
+
+.schedule-row > div{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.schedule-row > div{
+  white-space:nowrap;
 }
 
 .schedule-cell{
@@ -90,14 +109,19 @@ sans-serif;
   pointer-events:none;
 }
 
-}
 .schedule-cell span{
   position:relative;
   z-index:1;
 }
-
 .schedule-scroll{
   display:inline-block;
+  white-space:nowrap;
+}
+
+.schedule-cell{
+  overflow:hidden;
+  white-space:nowrap;
+  position:relative;
 }
 
 .schedule-scroll.animate{
@@ -241,11 +265,34 @@ sans-serif;
     font-size:38px;
   }
 
-  .schedule-row{
-    font-size:28px;
-    grid-template-columns:120px 220px 220px 140px;
-  }
+.schedule-row{
+  display:grid;
+  grid-template-columns:
+    10%
+    20%
+    25%
+    25%
+    20%;
 
+  column-gap:8px;
+
+  font-size:40px;
+  font-weight:bold;
+  margin-bottom:12px;
+  align-items:center;
+
+  background:#161b22;
+  border-left:8px solid #2563eb;
+  border-radius:10px;
+
+  padding:12px 10px;
+}
+
+.schedule-row > div{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+}
   .card-title{
     font-size:26px;
   }
@@ -511,13 +558,6 @@ document.getElementById("clock").innerHTML =
   week[now.getDay()] + ") " +
   now.toLocaleTimeString("ja-JP");
 
-//  document.getElementById("scheduleTitle").innerHTML =
-//    now.getFullYear() + "年" +
-//    (now.getMonth()+1) + "月" +
-//    now.getDate() + "日(" +
-//    week[now.getDay()] + ")" +
-//    " 搬入出予定";
-
   let scheduleHtml = "";
 
 data.schedule
@@ -533,17 +573,29 @@ scheduleHtml += `
         : item.time
     }</div>
 
-    <div class="project-cell">
-      <div class="project-scroll">
-        ${item.project}
-      </div>
-    </div>
+<div class="schedule-cell">
+  <div class="schedule-scroll">
+    ${item.project}
+  </div>
+</div>
 
-    <div>${item.content}</div>
+<div class="schedule-cell">
+  <div class="schedule-scroll">
+    ${item.content}
+  </div>
+</div>
 
-    <div>${item.vehicle}</div>
+<div class="schedule-cell">
+  <div class="schedule-scroll">
+    ${item.vehicle}
+  </div>
+</div>
 
-    <div>${item.driver || ""}</div>
+<div class="schedule-cell">
+  <div class="schedule-scroll">
+    ${item.driver || ""}
+  </div>
+</div>
 
   </div>
 `;
