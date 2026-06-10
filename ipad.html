@@ -243,27 +243,23 @@ body{
 
 .schedule-row{
   display:grid;
-
-  grid-template-columns:
-    90px
-    190px
-    150px
-    130px
-    100px;
-
+  grid-template-columns:90px 190px 150px 120px 140px;
   column-gap:10px;
-
   font-size:28px;
   font-weight:bold;
   margin-bottom:14px;
   align-items:center;
-
   background:#161b22;
   border-left:8px solid #2563eb;
   border-radius:10px;
-
   padding:14px 12px;
   min-height:60px;
+}
+
+.schedule-row > div{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
   .card-title{
     font-size:26px;
