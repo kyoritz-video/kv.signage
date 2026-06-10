@@ -72,7 +72,7 @@ body{
 
 .schedule-row{
   display:grid;
-  grid-template-columns:90px 320px 220px 100px;
+  grid-template-columns:90px 260px 180px 120px 120px;
   font-size:28px;
   font-weight:bold;
   margin-bottom:14px;
@@ -331,7 +331,7 @@ body{
 <script>
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbzLzxEDv6Xnxi8il-_ByLJoyUctKGJBjp4sZ4yLovd017Fhjj8Jo_nmWD8EG5HAw3hIIg/exec";
+"https://script.google.com/macros/s/AKfycbwpNx5qBaQ4W8rTz5o8sF9yTuyYg80jinEfYz8X2euK5VHWjXdbMtMOI2ln6bI96dNDXg/exec";
 
 function updateClock(){
 
@@ -521,23 +521,29 @@ data.schedule
   .slice(0,7)
   .forEach(item=>{
 
-    scheduleHtml += `
-      <div class="schedule-row">
-<div>${
-  item.time === "23:59"
-    ? "未定"
-    : item.time
-}</div>
-<div class="project-cell">
-  <div class="project-scroll">
-    ${item.project}
-  </div>
-</div>
-        <div>${item.content}</div>
-        <div>${item.vehicle}</div>
-      </div>
-    `;
+scheduleHtml += `
+  <div class="schedule-row">
 
+    <div>${
+      item.time === "23:59"
+        ? "未定"
+        : item.time
+    }</div>
+
+    <div class="project-cell">
+      <div class="project-scroll">
+        ${item.project}
+      </div>
+    </div>
+
+    <div>${item.content}</div>
+
+    <div>${item.vehicle}</div>
+
+    <div>${item.driver || ""}</div>
+
+  </div>
+`;
   });
 
 if(scheduleHtml === ""){

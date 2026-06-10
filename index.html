@@ -334,7 +334,7 @@ sans-serif;
 <script>
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbzLzxEDv6Xnxi8il-_ByLJoyUctKGJBjp4sZ4yLovd017Fhjj8Jo_nmWD8EG5HAw3hIIg/exec";
+"https://script.google.com/macros/s/AKfycbwpNx5qBaQ4W8rTz5o8sF9yTuyYg80jinEfYz8X2euK5VHWjXdbMtMOI2ln6bI96dNDXg/exec";
 
 function updateClock(){
 
@@ -524,33 +524,29 @@ data.schedule
   .slice(0,10)
   .forEach(item=>{
 
-    scheduleHtml += `
-      <div class="schedule-row">
-<div>${
-  item.time === "23:59"
-    ? "未定"
-    : item.time
-}</div>
+scheduleHtml += `
+  <div class="schedule-row">
 
-<div class="schedule-cell">
-  <span class="schedule-scroll">
-    ${item.project}
-  </span>
-</div>
+    <div>${
+      item.time === "23:59"
+        ? "未定"
+        : item.time
+    }</div>
 
-<div class="schedule-cell">
-  <span class="schedule-scroll">
-    ${item.content}
-  </span>
-</div>
-
-
-    <div>
-      ${item.vehicle}
+    <div class="project-cell">
+      <div class="project-scroll">
+        ${item.project}
+      </div>
     </div>
 
-      </div>
-    `;
+    <div>${item.content}</div>
+
+    <div>${item.vehicle}</div>
+
+    <div>${item.driver || ""}</div>
+
+  </div>
+`;
 
   });
 
