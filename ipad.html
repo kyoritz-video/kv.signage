@@ -74,11 +74,11 @@ body{
   display:grid;
 
   grid-template-columns:
-    90px
-    1fr
-    140px
-    150px
-    180px;
+    10%
+    18%
+    24%
+    23%
+    25%;
 
   column-gap:8px;
 
@@ -96,7 +96,16 @@ body{
 }
 
 .schedule-row > div{
+  min-width:0;
   white-space:nowrap;
+  overflow:hidden;
+}
+
+.schedule-cell{
+  overflow:hidden;
+  white-space:nowrap;
+  position:relative;
+  min-width:0;
 }
 
 .project-cell{
@@ -562,17 +571,29 @@ scheduleHtml += `
         : item.time
     }</div>
 
-    <div class="project-cell">
-      <div class="project-scroll">
+    <div class="schedule-cell">
+      <div class="schedule-scroll">
         ${item.project}
       </div>
     </div>
 
-    <div>${item.content}</div>
+    <div class="schedule-cell">
+      <div class="schedule-scroll">
+        ${item.content}
+      </div>
+    </div>
 
-    <div>${item.vehicle}</div>
+    <div class="schedule-cell">
+      <div class="schedule-scroll">
+        ${item.vehicle}
+      </div>
+    </div>
 
-    <div>${item.driver || ""}</div>
+    <div class="schedule-cell">
+      <div class="schedule-scroll">
+        ${item.driver || ""}
+      </div>
+    </div>
 
   </div>
 `;
