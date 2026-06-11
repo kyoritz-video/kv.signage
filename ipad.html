@@ -118,6 +118,47 @@ body{
   animation:projectScroll 15s linear infinite;
 }
 
+.driver-scroll.animate{
+  animation:driverMarquee 12s linear infinite;
+}
+
+@keyframes driverMarquee{
+
+  0%{
+    transform:translateX(25%);
+  }
+
+  20%{
+    transform:translateX(25%);
+  }
+
+  100%{
+    transform:translateX(-50%);
+  }
+
+}
+
+.driver-scroll.animate{
+  animation:driverMarquee 12s linear infinite;
+}
+
+@keyframes driverMarquee{
+
+  0%{
+    transform:translateX(10%);
+  }
+
+  20%{
+    transform:translateX(10%);
+  }
+
+  100%{
+    transform:translateX(-50%);
+  }
+
+}
+
+
 @keyframes projectScroll{
 
   0%{
@@ -585,11 +626,11 @@ scheduleHtml += `
       </div>
     </div>
 
-    <div class="schedule-cell">
-      <div class="schedule-scroll">
-        ${item.driver || ""}
-      </div>
-    </div>
+<div class="schedule-cell driver-cell">
+  <div class="schedule-scroll driver-scroll">
+    ${item.driver || ""}
+  </div>
+</div>
 
   </div>
 `;
