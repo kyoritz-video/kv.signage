@@ -628,10 +628,7 @@ document
   .querySelectorAll(".schedule-scroll")
   .forEach(el => {
 
-    if(
-      el.scrollWidth >
-      el.parentElement.clientWidth
-    ){
+    if(el.scrollWidth > el.parentElement.clientWidth){
       el.classList.add("animate");
     }
 
