@@ -142,22 +142,6 @@ body{
   animation:driverMarquee 12s linear infinite;
 }
 
-@keyframes driverMarquee{
-
-  0%{
-    transform:translateX(10%);
-  }
-
-  20%{
-    transform:translateX(10%);
-  }
-
-  100%{
-    transform:translateX(-50%);
-  }
-
-}
-
 
 @keyframes projectScroll{
 
@@ -585,14 +569,6 @@ document.getElementById("clock").innerHTML =
   now.getDate() + "日(" +
   week[now.getDay()] + ") " +
   now.toLocaleTimeString("ja-JP");
-
-//  document.getElementById("scheduleTitle").innerHTML =
-//    now.getFullYear() + "年" +
-//    (now.getMonth()+1) + "月" +
-//    now.getDate() + "日(" +
-//    week[now.getDay()] + ")" +
-//    " 搬入出予定";
-
   let scheduleHtml = "";
 
 data.schedule
@@ -614,17 +590,13 @@ scheduleHtml += `
       </div>
     </div>
 
-    <div class="schedule-cell">
-      <div class="schedule-scroll">
-        ${item.content}
-      </div>
-    </div>
+<div>
+  ${item.content}
+</div>
 
-    <div class="schedule-cell">
-      <div class="schedule-scroll">
-        ${item.vehicle}
-      </div>
-    </div>
+<div>
+  ${item.vehicle}
+</div>
 
 <div class="schedule-cell driver-cell">
   <div class="schedule-scroll driver-scroll">
