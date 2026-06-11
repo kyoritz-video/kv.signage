@@ -130,7 +130,7 @@ body{
 <script>
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbwpNx5qBaQ4W8rTz5o8sF9yTuyYg80jinEfYz8X2euK5VHWjXdbMtMOI2ln6bI96dNDXg/exec";
+"https://script.google.com/macros/s/AKfycbwIJvhY0UJzmc819AHSJOoreiKeaTpTiJX6Cn0Q7V3L91TC-hzpr9_WpTnOAbnGrxAn-g/exec";
 
 function updateClock(){
 
@@ -153,7 +153,15 @@ async function loadData(){
   document.getElementById("schedule").innerHTML =
     '<div class="no-data">読み込み中...</div>';
 
-  const res = await fetch(API_URL);
+const selectedDate =
+  document.getElementById("datePicker").value;
+
+const url =
+  selectedDate
+    ? API_URL + "?date=" + selectedDate
+    : API_URL;
+
+const res = await fetch(url);
   const data = await res.json();
 
   let html = "";
@@ -206,6 +214,20 @@ async function loadData(){
 }
 
 updateClock();
+
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth()+1).padStart(2,"0");
+const dd = String(today.getDate()).padStart(2,"0");
+
+document.getElementById("datePicker").value =
+  `${yyyy}-${mm}-${dd}`;
+
+document
+  .getElementById("datePicker")
+  .addEventListener("change", loadData);
+
+
 loadData();
 
 setInterval(updateClock,1000);
