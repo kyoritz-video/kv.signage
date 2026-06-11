@@ -65,10 +65,10 @@ sans-serif;
 
   grid-template-columns:
     8%
-    24%
+    32%
     18%
-    23%
-    27%;
+    20%
+    22%;
 
   column-gap:10px;
 
@@ -93,10 +93,19 @@ sans-serif;
   white-space:nowrap;
 }
 
+.schedule-row{
+  overflow:hidden;
+}
+
 .schedule-cell{
   overflow:hidden;
   white-space:nowrap;
   position:relative;
+}
+
+.schedule-scroll{
+  display:inline-block;
+  white-space:nowrap;
 }
 
 .schedule-cell::after{
@@ -113,9 +122,11 @@ sans-serif;
   position:relative;
   z-index:1;
 }
+
 .schedule-scroll{
   display:inline-block;
   white-space:nowrap;
+  transform:translateX(0);
 }
 
 .schedule-cell{
@@ -125,11 +136,15 @@ sans-serif;
 }
 
 .schedule-scroll.animate{
-
-  animation:marquee 12s linear infinite;
+  animation:marquee 18s ease-in-out infinite alternate;
 }
 
-@keyframes marquee{
+.driver-cell .schedule-scroll.animate{
+  animation:driverMarquee 15s linear infinite;
+}
+
+@keyframes driverMarquee{
+
   0%{
     transform:translateX(0);
   }
@@ -141,7 +156,19 @@ sans-serif;
   100%{
     transform:translateX(-50%);
   }
+
 }
+
+@keyframes marquee{
+  from{
+    transform:translateX(0);
+  }
+
+  to{
+    transform:translateX(-40%);
+  }
+}
+
 .schedule-row:nth-child(odd){
   background:#1a1f28;
 }
@@ -150,6 +177,16 @@ sans-serif;
   background:#202734;
 }
 
+.driver-cell{
+  overflow:hidden !important;
+  min-width:0 !important;
+  max-width:100%;
+}
+
+.driver-cell .schedule-scroll{
+  display:inline-block;
+  white-space:nowrap;
+}
 
 .card{
   background:#161b22;
@@ -246,6 +283,24 @@ sans-serif;
   animation:scroll 25s linear infinite;
 }
 
+.project-scroll.animate{
+  animation:projectMarquee 15s linear infinite;
+}
+
+@keyframes projectMarquee{
+  0%{
+    transform:translateX(0);
+  }
+
+  20%{
+    transform:translateX(0);
+  }
+
+  100%{
+    transform:translateX(-100%);
+  }
+}
+
 @keyframes scroll{
   from{
     transform:translateX(0);
@@ -268,11 +323,11 @@ sans-serif;
 .schedule-row{
   display:grid;
   grid-template-columns:
-    10%
+     8%
+    32%
+    18%
     20%
-    25%
-    25%
-    20%;
+    22%;
 
   column-gap:8px;
 
@@ -574,7 +629,7 @@ scheduleHtml += `
     }</div>
 
 <div class="schedule-cell">
-  <div class="schedule-scroll">
+  <div class="schedule-scroll project-scroll">
     ${item.project}
   </div>
 </div>
@@ -591,8 +646,8 @@ scheduleHtml += `
   </div>
 </div>
 
-<div class="schedule-cell">
-  <div class="schedule-scroll">
+<div class="schedule-cell driver-cell">
+  <div class="schedule-scroll driver-scroll">
     ${item.driver || ""}
   </div>
 </div>
@@ -625,11 +680,39 @@ document.getElementById("schedule").innerHTML =
   scheduleHtml;
 
 document
-  .querySelectorAll(".schedule-scroll")
+  .querySelectorAll(".project-scroll, .driver-scroll")
   .forEach(el => {
 
-    if(el.scrollWidth > el.parentElement.clientWidth){
-      el.classList.add("animate");
+    // ドライバー
+if(el.classList.contains("driver-scroll")){
+
+  if(
+    el.textContent.trim().length >= 8
+  ){
+
+    el.innerHTML =
+      el.innerHTML + "　　　" + el.innerHTML;
+
+    el.classList.add("animate");
+  }
+
+}
+    // 案件名
+    else{
+
+      if(
+        el.scrollWidth >
+        el.parentElement.clientWidth
+      ){
+
+        el.innerHTML =
+          el.innerHTML +
+          "　　　" +
+          el.innerHTML;
+
+        el.classList.add("animate");
+      }
+
     }
 
   });
