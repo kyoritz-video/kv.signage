@@ -318,10 +318,11 @@ body{
 }
 
 #screenSaver{
-  display:none;
+  display:flex;
+
   position:fixed;
   inset:0;
-  z-index:99999;
+  z-index:9999;
 
   background:#ffffff;
   color:#111827;
@@ -329,6 +330,15 @@ body{
   align-items:center;
   justify-content:center;
   flex-direction:column;
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:
+    opacity 1.5s ease,
+    visibility 1.5s ease;
+
+  pointer-events:none;
 }
 
 #screenSaverClock{
@@ -339,6 +349,16 @@ body{
   letter-spacing:4px;
 
   font-variant-numeric:tabular-nums;
+}
+
+#screenSaver.show{
+  opacity:1;
+  visibility:visible;
+}
+
+#screenSaver.show{
+  opacity:1;
+  visibility:visible;
 }
 
 #screenSaverDate{
@@ -770,7 +790,7 @@ function checkScreenSaver(){
 
     if(h>=1 && h<7){
 
-    saver.style.display="flex";
+    saver.style.display="show";
 
     saver.style.background="#000";
 
@@ -794,7 +814,7 @@ function checkScreenSaver(){
     s<30
   ){
 
-    saver.style.display="flex";
+    saver.style.display="show";
 
     saver.style.background="#fff";
 
