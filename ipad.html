@@ -769,6 +769,8 @@ function updateScreenSaverClock(){
     now.getDate()+"日("+
     week[now.getDay()]+")";
 
+const TEST_POSITION = 3;
+
 const minute = now.getMinutes();
 //const pos = Math.floor(minute / 5) % 6;
 const pos = TEST_POSITION; //テスト用
@@ -785,8 +787,6 @@ const positions = [
   {top:"50%", left:"50%"}  // 中央
 ];
 
-const TEST_POSITION = 3;
-
 const p = positions[pos];
 
 clock.style.position = "absolute";
@@ -795,8 +795,6 @@ date.style.position = "absolute";
 clock.style.left = p.left;
 clock.style.top  = p.top;
 clock.style.transform = "translate(-50%,-50%)";
-
-}
 
 date.style.left = p.left;
 date.style.top  = `calc(${p.top} + 90px)`;
