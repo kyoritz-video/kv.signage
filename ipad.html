@@ -770,7 +770,8 @@ function updateScreenSaverClock(){
     week[now.getDay()]+")";
 
 const minute = now.getMinutes();
-const pos = Math.floor(minute / 5) % 6;
+//const pos = Math.floor(minute / 5) % 6;
+const pos = TEST_POSITION; //テスト用
 
 const clock = document.getElementById("screenSaverClock");
 const date  = document.getElementById("screenSaverDate");
@@ -783,6 +784,8 @@ const positions = [
   {top:"75%", left:"75%"}, // 右下
   {top:"50%", left:"50%"}  // 中央
 ];
+
+const TEST_POSITION = 3;
 
 const p = positions[pos];
 
@@ -812,7 +815,8 @@ function checkScreenSaver(){
 
   // 夜間
 
-    if(h>=1 && h<7){
+//    if(h>=1 && h<7){
+if(true){
 
     saver.classList.add("show");
 
@@ -833,8 +837,8 @@ function checkScreenSaver(){
   // 30分ごと30秒
 
   if(
-//    (m===0 || m===30)
-//    &&
+    (m===0 || m===30)
+    &&
     s<30
   ){
 
