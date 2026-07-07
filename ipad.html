@@ -317,6 +317,42 @@ body{
 
 }
 
+#screenSaver{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+
+  background:#ffffff;
+  color:#111827;
+
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+
+#screenSaverClock{
+
+  font-size:140px;
+  font-weight:800;
+
+  letter-spacing:4px;
+
+  font-variant-numeric:tabular-nums;
+}
+
+#screenSaverDate{
+
+  margin-top:25px;
+
+  font-size:36px;
+
+  font-weight:600;
+
+  color:#4b5563;
+
+}
+
 </style>
 
 </head>
@@ -693,10 +729,109 @@ if(noticeText === ""){
 loadData();
 loadWeather();
 
+function updateScreenSaverClock(){
+
+  const now = new Date();
+
+  const week =
+    ["日","月","火","水","木","金","土"];
+
+  document.getElementById(
+    "screenSaverClock"
+  ).innerHTML =
+
+    now.toLocaleTimeString(
+      "ja-JP"
+    );
+
+  document.getElementById(
+    "screenSaverDate"
+  ).innerHTML =
+
+    now.getFullYear()+"年"+
+    (now.getMonth()+1)+"月"+
+    now.getDate()+"日("+
+    week[now.getDay()]+")";
+
+}
+
+function checkScreenSaver(){
+
+  const now = new Date();
+
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+
+  const saver =
+    document.getElementById("screenSaver");
+
+  // 夜間
+
+  if(h>=1 && h<7){
+
+    saver.style.display="flex";
+
+    saver.style.background="#000";
+
+    saver.style.color="#fff";
+
+    document.getElementById(
+      "screenSaverDate"
+    ).style.color="#ddd";
+
+    updateScreenSaverClock();
+
+    return;
+
+  }
+
+  // 30分ごと30秒
+
+  if(
+    (m===0 || m===30)
+    &&
+    s<30
+  ){
+
+    saver.style.display="flex";
+
+    saver.style.background="#fff";
+
+    saver.style.color="#111827";
+
+    document.getElementById(
+      "screenSaverDate"
+    ).style.color="#4b5563";
+
+    updateScreenSaverClock();
+
+  }
+  else{
+
+    saver.style.display="none";
+
+  }
+
+}
+
+setInterval(updateScreenSaverClock,1000);
+
+setInterval(checkScreenSaver,1000);
+
+checkScreenSaver();
+
+
+
 setInterval(loadData,60000);
 setInterval(loadWeather,600000);
 
 </script>
+
+<div id="screenSaver">
+  <div id="screenSaverClock"></div>
+  <div id="screenSaverDate"></div>
+</div>
 
 </body>
 </html>
