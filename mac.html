@@ -375,6 +375,40 @@ font-family:
   }
 }
 
+#screenSaver{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#ffffff;
+  color:#111827;
+
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    "Helvetica Neue",
+    sans-serif;
+}
+
+#screenSaverClock{
+  font-size:180px;
+  font-weight:800;
+  letter-spacing:4px;
+  font-variant-numeric:tabular-nums;
+}
+
+#screenSaverDate{
+  margin-top:30px;
+  font-size:48px;
+  font-weight:600;
+  color:#374151;
+}
+
 
 </style>
 
@@ -810,10 +844,97 @@ requestAnimationFrame(() => {
 loadData();
 loadWeather();
 
+let screenSaverTimer = null;
+
+function updateScreenSaverClock(){
+
+  const now = new Date();
+  const week = ["日","月","火","水","木","金","土"];
+
+  const hh = String(now.getHours()).padStart(2,"0");
+  const mm = String(now.getMinutes()).padStart(2,"0");
+  const ss = String(now.getSeconds()).padStart(2,"0");
+
+  document.getElementById("screenSaverClock").innerHTML =
+    `${hh}:${mm}:${ss}`;
+
+  document.getElementById("screenSaverDate").innerHTML =
+    now.getFullYear() + "年" +
+    (now.getMonth()+1) + "月" +
+    now.getDate() + "日(" +
+    week[now.getDay()] + ")";
+}
+
+function showScreenSaver(mode){
+
+  const saver =
+    document.getElementById("screenSaver");
+
+  saver.style.display = "flex";
+
+  if(mode === "night"){
+    saver.style.background = "#000000";
+    saver.style.color = "#ffffff";
+    document.getElementById("screenSaverDate").style.color =
+      "#cbd5e1";
+  }
+  else{
+    saver.style.background = "#ffffff";
+    saver.style.color = "#111827";
+    document.getElementById("screenSaverDate").style.color =
+      "#374151";
+  }
+
+  updateScreenSaverClock();
+}
+
+function hideScreenSaver(){
+
+  const saver =
+    document.getElementById("screenSaver");
+
+  saver.style.display = "none";
+}
+
+function checkScreenSaver(){
+
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const second = now.getSeconds();
+
+  // 夜間 1:00〜7:00 は黒背景表示
+  if(hour >= 1 && hour < 7){
+    showScreenSaver("night");
+    return;
+  }
+
+  // 夜間から抜けたら通常表示に戻す
+  hideScreenSaver();
+
+  // 30分ごとに30秒だけ白背景時計
+  if(
+    (minute === 0 || minute === 30) &&
+    second < 30
+  ){
+    showScreenSaver("day");
+  }
+
+}
+
+setInterval(updateScreenSaverClock,1000);
+setInterval(checkScreenSaver,1000);
+checkScreenSaver();
+
 setInterval(loadData,60000);
 setInterval(loadWeather,600000);
 
 </script>
+
+<div id="screenSaver">
+  <div id="screenSaverClock"></div>
+  <div id="screenSaverDate"></div>
+</div>
 
 </body>
 </html>
