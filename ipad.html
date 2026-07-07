@@ -790,7 +790,7 @@ function checkScreenSaver(){
 
     if(h>=1 && h<7){
 
-    saver.style.display="show";
+    saver.classList.add("show");
 
     saver.style.background="#000";
 
@@ -814,7 +814,7 @@ function checkScreenSaver(){
     s<30
   ){
 
-    saver.style.display="show";
+    saver.classList.add("show");
 
     saver.style.background="#fff";
 
@@ -829,7 +829,7 @@ function checkScreenSaver(){
   }
   else{
 
-    saver.style.display="none";
+    saver.classList.remove("show");
 
   }
 
