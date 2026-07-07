@@ -919,21 +919,21 @@ if(hour >= 1 && hour < 7){
 }
 
 // 30秒ごとテスト
-if(second < 30){
-  showScreenSaver("day");
-}else{
-  hideScreenSaver();
-}
-
-// 30分ごと
-//if(
-//  (minute === 0 || minute === 30) &&
-//  second < 30
-//){
+//if(second < 30){
 //  showScreenSaver("day");
 //}else{
 //  hideScreenSaver();
 //}
+
+// 30分ごと
+if(
+  (minute === 0 || minute === 30) &&
+  second < 30
+){
+  showScreenSaver("day");
+}else{
+  hideScreenSaver();
+}
 
 }
 
