@@ -865,15 +865,41 @@ function updateScreenSaverClock(){
   const ss = String(now.getSeconds()).padStart(2,"0");
 
   document.getElementById("screenSaverClock").innerHTML =
-    `${hh}:${mm}:${ss}`;
+    `${hh}:${mm}`;
 
   document.getElementById("screenSaverDate").innerHTML =
     now.getFullYear() + "年" +
     (now.getMonth()+1) + "月" +
     now.getDate() + "日(" +
     week[now.getDay()] + ")";
-}
 
+  const pos = Math.floor(now.getMinutes() / 5) % 6;
+
+  const clock = document.getElementById("screenSaverClock");
+  const date  = document.getElementById("screenSaverDate");
+
+  const positions = [
+    {top:"50%", left:"50%"},
+    {top:"30%", left:"68%"},
+    {top:"70%", left:"32%"},
+    {top:"30%", left:"32%"},
+    {top:"70%", left:"68%"},
+    {top:"50%", left:"50%"}
+  ];
+
+  const p = positions[pos];
+
+  clock.style.position = "absolute";
+  date.style.position = "absolute";
+
+  clock.style.left = p.left;
+  clock.style.top = p.top;
+  clock.style.transform = "translate(-50%,-50%)";
+
+  date.style.left = p.left;
+  date.style.top = `calc(${p.top} + 140px)`;
+  date.style.transform = "translate(-50%,0)";
+}
 function showScreenSaver(mode){
 
   const saver =
