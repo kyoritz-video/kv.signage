@@ -767,9 +767,43 @@ if(noticeText === ""){
   noticeText = "連絡事項はありません";
 }
 
-  document.getElementById("notice").innerHTML =
-    noticeText;
+  const noticeEl = document.getElementById("notice");
 
+noticeEl.innerHTML = noticeText;
+
+// 一旦リセット
+noticeEl.style.animation = "none";
+
+// レイアウト確定後に実行
+requestAnimationFrame(() => {
+
+  const wrapWidth =
+    noticeEl.parentElement.clientWidth;
+
+  const textWidth =
+    noticeEl.scrollWidth;
+
+  noticeEl.animate(
+    [
+      {
+        transform:`translateX(${wrapWidth}px)`
+      },
+      {
+        transform:`translateX(-${textWidth}px)`
+      }
+    ],
+    {
+      duration:
+        (data.settings.telop_speed
+          ? Number(data.settings.telop_speed)
+          : 20) * 1000,
+
+      iterations:Infinity,
+      easing:"linear"
+    }
+  );
+
+});
 }
 
 loadData();
