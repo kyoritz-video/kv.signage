@@ -769,11 +769,12 @@ function updateScreenSaverClock(){
     now.getDate()+"日("+
     week[now.getDay()]+")";
 
-const TEST_POSITION = 5;
+//const TEST_POSITION = 5;
 
 const minute = now.getMinutes();
-//const pos = Math.floor(minute / 5) % 6;
-const pos = TEST_POSITION; //テスト用
+const pos = Math.floor(minute / 5) % 6;
+
+//const pos = TEST_POSITION; //テスト用
 
 const clock = document.getElementById("screenSaverClock");
 const date  = document.getElementById("screenSaverDate");
@@ -815,8 +816,8 @@ function checkScreenSaver(){
 
   // 夜間
 
-//    if(h>=1 && h<7){
-if(true){
+    if(h>=1 && h<7){
+//if(true){
 
     saver.classList.add("show");
 
