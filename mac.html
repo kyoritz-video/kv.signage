@@ -376,10 +376,12 @@ font-family:
 }
 
 #screenSaver{
-  display:none;
+  display:flex;
+
   position:fixed;
   inset:0;
   z-index:9999;
+
   background:#ffffff;
   color:#111827;
 
@@ -387,12 +389,19 @@ font-family:
   justify-content:center;
   flex-direction:column;
 
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Hiragino Sans",
-    "Helvetica Neue",
-    sans-serif;
+  opacity:0;
+  visibility:hidden;
+
+  transition:
+    opacity 1.0s ease,
+    visibility 1.0s ease;
+
+  pointer-events:none;
+}
+
+#screenSaver.show{
+  opacity:1;
+  visibility:visible;
 }
 
 #screenSaverClock{
@@ -870,7 +879,7 @@ function showScreenSaver(mode){
   const saver =
     document.getElementById("screenSaver");
 
-  saver.style.display = "flex";
+  saver.classList.add("show");
 
   if(mode === "night"){
     saver.style.background = "#000000";
@@ -893,7 +902,7 @@ function hideScreenSaver(){
   const saver =
     document.getElementById("screenSaver");
 
-  saver.style.display = "none";
+  saver.classList.remove("show");
 }
 
 function checkScreenSaver(){
@@ -903,22 +912,18 @@ function checkScreenSaver(){
   const minute = now.getMinutes();
   const second = now.getSeconds();
 
-  // 夜間 1:00〜7:00 は黒背景表示
-  if(hour >= 1 && hour < 7){
+// 夜間
+if(hour >= 1 && hour < 7){
     showScreenSaver("night");
     return;
-  }
+}
 
-  // 夜間から抜けたら通常表示に戻す
-  hideScreenSaver();
-
-  // 30分ごとに30秒だけ白背景時計
-  if(
-    (minute === 0 || minute === 30) &&
-    second < 30
-  ){
+// 30分ごと
+if((minute===0 || minute===30) && second<30){
     showScreenSaver("day");
-  }
+}else{
+    hideScreenSaver();
+}
 
 }
 
