@@ -278,38 +278,25 @@ font-family:
 
 .notice-text{
   position:absolute;
-  left:0;
+  left:100%;
   white-space:nowrap;
   line-height:60px;
-  font-size:28px;
-}
+  font-size:34px;
+  font-weight:bold;
 
-.project-scroll.animate{
-  animation:projectMarquee 15s linear infinite;
-}
-
-@keyframes projectMarquee{
-  0%{
-    transform:translateX(0);
-  }
-
-  20%{
-    transform:translateX(0);
-  }
-
-  100%{
-    transform:translateX(-100%);
-  }
+  animation:none;
 }
 
 @keyframes scroll{
-  0%{
+
+  from{
     transform:translateX(0);
   }
 
-  100%{
-    transform:translateX(calc(-100% - 100vw));
+  to{
+    transform:translateX(calc(-100vw - 100%));
   }
+
 }
 
 @media screen and (min-width:2200px){
@@ -807,11 +794,11 @@ if(visitorsHtml === ""){
 
   let noticeText = "";
 
-  data.notices.forEach(item=>{
+data.notices.forEach(item=>{
 
-    noticeText += "　　" + item.text;
+  noticeText += "　　" + item.text;
 
-  });
+});
 
 if(noticeText === ""){
   noticeText = "連絡事項はありません";
@@ -821,39 +808,22 @@ const noticeEl = document.getElementById("notice");
 
 noticeEl.innerHTML = noticeText;
 
-// 既存アニメーション停止
-noticeEl.getAnimations().forEach(a => a.cancel());
+// Safari対策
+noticeEl.style.animation = "none";
 
-requestAnimationFrame(() => {
+// 再描画を強制
+void noticeEl.offsetWidth;
 
-  const wrapWidth =
-    noticeEl.parentElement.clientWidth;
+// settingsシートから取得
+const telopSpeed =
+  data.settings &&
+  data.settings.telop_speed
+    ? Number(data.settings.telop_speed)
+    : 25;
 
-  const textWidth =
-    noticeEl.scrollWidth;
-
-  const telopSpeed =
-    data.settings && data.settings.telop_speed
-      ? Number(data.settings.telop_speed)
-      : 25;
-
-  noticeEl.animate(
-    [
-      {
-        transform:`translateX(${wrapWidth}px)`
-      },
-      {
-        transform:`translateX(-${textWidth}px)`
-      }
-    ],
-    {
-      duration:telopSpeed * 1000,
-      iterations:Infinity,
-      easing:"linear"
-    }
-  );
-
-});}
+// アニメーション再開
+noticeEl.style.animation =
+  `scroll ${telopSpeed}s linear infinite`;
 
 loadData();
 loadWeather();
