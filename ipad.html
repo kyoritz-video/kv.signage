@@ -82,7 +82,7 @@ body{
 
   column-gap:8px;
 
-  font-size:28px;
+  font-size:32px;
   font-weight:bold;
   margin-bottom:14px;
   align-items:center;
@@ -603,7 +603,12 @@ document.getElementById("weather").innerHTML = `
 
 async function loadData(){
 
-  const res = await fetch(API_URL);
+  const res = await fetch(
+   API_URL + "?t=" + Date.now(),
+   {
+     cache: "no-store"
+   }
+   );
   const data = await res.json();
 
 const now = new Date();
@@ -872,7 +877,7 @@ checkScreenSaver();
 
 
 
-setInterval(loadData,60000);
+setInterval(loadData,30000);
 setInterval(loadWeather,600000);
 
 </script>
