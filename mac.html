@@ -652,7 +652,12 @@ document.getElementById("weather").innerHTML = `
 
 async function loadData(){
 
-  const res = await fetch(API_URL);
+  const res = await fetch(
+  API_URL + "?t=" + Date.now(),
+  {
+    cache:"no-store"
+  }
+);
   const data = await res.json();
 
 const now = new Date();
@@ -967,7 +972,7 @@ setInterval(updateScreenSaverClock,1000);
 setInterval(checkScreenSaver,1000);
 checkScreenSaver();
 
-setInterval(loadData,60000);
+setInterval(loadData,30000);
 setInterval(loadWeather,600000);
 
 </script>
