@@ -532,119 +532,88 @@ async function loadWeather(){
 
   try{
 
-  const url =
-    "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&forecast_days=8";
+    const url =
+      "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&forecast_days=8";
 
-  const res = await fetch(url);
-  const data = await res.json();
+    const res = await fetch(url);
+    const data = await res.json();
+
+    let weekWeather = "";
+
+    const weekNames = ["日","月","火","水","木","金","土"];
+
+    for(let i=1;i<=7;i++){
+
+      const date = new Date(data.daily.time[i]);
+      const day = date.getDay();
+
+      let dayColor = "#cccccc";
+
+      if(day === 0){
+        dayColor = "#ff8080";
+      }else if(day === 6){
+        dayColor = "#80aaff";
+      }
+
+      weekWeather += `
+        <div style="
+          display:inline-block;
+          width:72px;
+          text-align:center;
+          vertical-align:top;
+          margin:0 3px;
+        ">
+          <div style="font-size:22px;">
+            ${date.getMonth()+1}/${date.getDate()}
+          </div>
+
+          <div style="font-size:18px; color:${dayColor};">
+            (${weekNames[day]})
+          </div>
+
+          <div style="font-size:46px; margin-top:4px;">
+            ${getWeatherIcon(data.daily.weather_code[i])}
+          </div>
+
+          <div style="font-size:18px; margin-top:2px; color:#ff8a80;">
+            ${Math.round(data.daily.temperature_2m_max[i])}℃
+          </div>
+
+          <div style="font-size:18px; color:#80caff;">
+            ${Math.round(data.daily.temperature_2m_min[i])}℃
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById("weather").innerHTML = `
+      <div style="
+        font-size:24px;
+        font-weight:bold;
+        color:#9ca3af;
+        margin-bottom:15px;
+      ">
+        週間天気予報
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:center;
+        gap:10px;
+      ">
+        ${weekWeather}
+      </div>
+    `;
 
   }catch(e){
 
     console.error("Weather Error", e);
 
+    document.getElementById("weather").innerHTML =
+      "天気情報を取得できません";
+
   }
 
-}
-
-
-let weekWeather = "";
-
-const weekNames = [
-  "日","月","火","水","木","金","土"
-];
-
-for(let i=0;i<=6;i++){
-
-  const date = new Date(
-    data.daily.time[i]
-  );
-
-const day = date.getDay();
-
-let dayColor = "#cccccc";
-
-if(day === 0){
-  dayColor = "#ff8080";
-}
-else if(day === 6){
-  dayColor = "#80aaff";
-}
-
-  weekWeather += `
-    <div style="
-      display:inline-block;
-      width:72px;
-      text-align:center;
-      vertical-align:top;
-      margin:0 3px;
-    ">
-
-      <div style="
-        font-size:22px;
-      ">
-        ${date.getMonth()+1}/${date.getDate()}
-      </div>
-
-<div style="
-  font-size:18px;
-  color:${dayColor};
-">
-  (${weekNames[day]})
-</div>
-
-<div style="
-  font-size:46px;
-  margin-top:4px;
-">
-  ${getWeatherIcon(
-    data.daily.weather_code[i]
-  )}
-</div>
-
-<div style="
-  font-size:18px;
-  margin-top:2px;
-  color:#ff8a80;
-">
-  ${Math.round(
-    data.daily.temperature_2m_max[i]
-  )}℃
-</div>
-
-<div style="
-  font-size:18px;
-  color:#80caff;
-">
-  ${Math.round(
-    data.daily.temperature_2m_min[i]
-  )}℃
-</div>
-
-    </div>
-  `;
-
-}
-
-document.getElementById("weather").innerHTML = `
-
-<div style="
-  font-size:24px;
-  font-weight:bold;
-  color:#9ca3af;
-  margin-bottom:15px;
-">
-  週間天気予報
-</div>
-
-<div style="
-  display:flex;
-  justify-content:center;
-  gap:10px;
-">
-  ${weekWeather}
-</div>
-
-`;
 }
 
 
