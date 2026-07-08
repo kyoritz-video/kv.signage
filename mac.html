@@ -530,11 +530,22 @@ function getWeatherIcon(code){
 
 async function loadWeather(){
 
+  try{
+
   const url =
     "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&forecast_days=8";
 
   const res = await fetch(url);
   const data = await res.json();
+
+  }catch(e){
+
+    console.error("Weather Error", e);
+
+  }
+
+}
+
 
 let weekWeather = "";
 
