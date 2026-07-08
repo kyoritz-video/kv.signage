@@ -288,15 +288,13 @@ font-family:
 }
 
 @keyframes scroll{
-
   from{
-    transform:translateX(0);
+    transform:translateX(100vw);
   }
 
   to{
-    transform:translateX(calc(-100vw - 100%));
+    transform:translateX(-100%);
   }
-
 }
 
 @media screen and (min-width:2200px){
@@ -786,26 +784,23 @@ if(noticeText === ""){
 
 const noticeEl = document.getElementById("notice");
 
-noticeEl.innerHTML = noticeText;
+if(noticeEl.dataset.text !== noticeText){
 
-// Safari対策
-noticeEl.style.animation = "none";
+  noticeEl.dataset.text = noticeText;
+  noticeEl.innerHTML = noticeText;
 
-// 再描画を強制
-void noticeEl.offsetWidth;
+}
 
-// settingsシートから取得
 const telopSpeed =
   data.settings &&
   data.settings.telop_speed
     ? Number(data.settings.telop_speed)
     : 25;
 
-// アニメーション再開
+noticeEl.style.animation = "none";
+void noticeEl.offsetWidth;
 noticeEl.style.animation =
-
   `scroll ${telopSpeed}s linear infinite`;
-
 }
 
 let screenSaverTimer = null;
