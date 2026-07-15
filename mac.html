@@ -136,7 +136,7 @@ font-family:
 }
 
 .schedule-scroll.animate{
-  animation:marquee 18s ease-in-out infinite alternate;
+  animation:marquee 18s linear infinite;
 }
 
 .driver-cell .schedule-scroll.animate{
@@ -161,12 +161,12 @@ font-family:
 
 
 @keyframes marquee{
-  from{
+  0%{
     transform:translateX(0);
   }
 
-  to{
-    transform:translateX(-40%);
+  100%{
+    transform:translateX(-50%);
   }
 }
 
@@ -284,7 +284,8 @@ font-family:
   font-size:34px;
   font-weight:bold;
 
-  animation:none;
+  animation:scroll 25s linear infinite;
+  will-change:transform;
 }
 
 @keyframes scroll{
