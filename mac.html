@@ -983,6 +983,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // 天気は10分ごとに更新
   setInterval(loadWeather,600000);
 
+  // ブラウザ復帰時にinformationテロップを再起動
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden && noticeInitialized){
+      applyNoticeText(true);
+    }
+  });
+
+  // 長時間運用で停止しないよう30分ごとに再起動
+  setInterval(() => {
+    if(noticeInitialized){
+      applyNoticeText(true);
+    }
+  }, 30 * 60 * 1000);
+
 });
 
 </script>
