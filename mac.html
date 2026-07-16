@@ -405,6 +405,78 @@ font-family:
 }
 
 
+
+/* 業務情報切替カード：熱中症情報／雨雲情報 */
+.info-rotation-card{
+  min-height:150px;
+  padding:18px 22px;
+  overflow:hidden;
+}
+.info-panel{
+  display:none;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .6s ease, transform .6s ease;
+}
+.info-panel.active{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+}
+.info-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+.info-icon{font-size:38px;line-height:1;}
+.info-title{font-size:32px;font-weight:700;}
+.info-main{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.25;}
+.info-sub{font-size:20px;color:#9ca3af;line-height:1.35;}
+.info-area{margin-left:auto;font-size:18px;color:#9ca3af;white-space:nowrap;}
+.info-dots{display:flex;justify-content:center;gap:10px;margin-top:10px;}
+.info-dot{width:10px;height:10px;border-radius:50%;background:#4b5563;}
+.info-dot.active{background:#60a5fa;}
+.heat-alert{
+  border-left:8px solid #c026d3;
+  padding-left:16px;
+  background:linear-gradient(90deg,rgba(192,38,211,.16),rgba(192,38,211,0) 58%);
+}
+.heat-alert .info-icon,.heat-alert .info-title,.heat-alert .info-main{color:#e879f9;}
+.heat-alert .info-sub{color:#f5d0fe;font-weight:600;}
+.heat-badge{
+  margin-left:auto;padding:5px 13px;border-radius:999px;background:#a21caf;color:#fff;
+  font-size:18px;font-weight:800;letter-spacing:.06em;animation:heatPulse 1.8s ease-in-out infinite;
+}
+.heat-dot{background:#c026d3 !important;}
+@keyframes heatPulse{
+  0%,100%{opacity:1;box-shadow:0 0 0 rgba(192,38,211,0);}
+  50%{opacity:.72;box-shadow:0 0 18px rgba(192,38,211,.55);}
+}
+.heat-meta{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+.heat-index-label{font-size:18px;color:#d8b4fe;font-weight:700;}
+.heat-index-value{font-size:36px;line-height:1;color:#f0abfc;font-weight:900;font-variant-numeric:tabular-nums;}
+.heat-index-unit{font-size:18px;color:#d8b4fe;font-weight:700;}
+.heat-updated{margin-left:auto;font-size:17px;color:#c4b5fd;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.rain-panel{border-left:8px solid #22c55e;padding-left:16px;}
+
+@media screen and (min-width:2200px){
+  .info-rotation-card{min-height:220px;padding:24px 28px;}
+  .info-header{gap:16px;margin-bottom:14px;}
+  .info-icon{font-size:52px;}
+  .info-title{font-size:42px;}
+  .info-area{font-size:24px;}
+  .heat-badge{font-size:24px;padding:7px 18px;}
+  .heat-meta{gap:18px;margin-bottom:10px;}
+  .heat-index-label,.heat-index-unit{font-size:24px;}
+  .heat-index-value{font-size:50px;}
+  .heat-updated{font-size:22px;}
+  .info-main{font-size:38px;margin-bottom:8px;}
+  .info-sub{font-size:27px;}
+  .info-dots{gap:12px;margin-top:14px;}
+  .info-dot{width:14px;height:14px;}
+}
+
 </style>
 
 </head>
@@ -442,6 +514,42 @@ font-family:
     </div>
   </div>
 
+
+
+  <div class="card info-rotation-card">
+    <div class="info-panel active heat-alert" id="heatPanel" data-index="0">
+      <div class="info-header">
+        <div class="info-icon">☀</div>
+        <div class="info-title">熱中症情報</div>
+        <div class="info-area">東京都心</div>
+        <div class="heat-badge" id="heatBadge">取得中</div>
+      </div>
+      <div class="heat-meta">
+        <span class="heat-index-label">暑さ指数</span>
+        <span class="heat-index-value" id="heatIndexValue">--.-</span>
+        <span class="heat-index-unit">WBGT</span>
+        <span class="heat-updated" id="heatUpdated">取得中</span>
+      </div>
+      <div class="info-main" id="heatMain">暑さ指数を取得しています</div>
+      <div class="info-sub" id="heatSub">東京都心の気象データから推定しています</div>
+    </div>
+
+    <div class="info-panel rain-panel" id="rainPanel" data-index="1">
+      <div class="info-header">
+        <div class="info-icon">☔</div>
+        <div class="info-title">雨雲情報</div>
+        <div class="info-area">東京都心</div>
+      </div>
+      <div class="info-main" id="rainMain">降水予測を取得しています</div>
+      <div class="info-sub" id="rainSub">取得中</div>
+    </div>
+
+    <div class="info-dots">
+      <span class="info-dot active heat-dot"></span>
+      <span class="info-dot"></span>
+    </div>
+  </div>
+
   <div class="card">
 
     <div class="card-title">
@@ -476,6 +584,61 @@ font-family:
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzHLMweMXbWOIPgst29lFFuSmNDCQwDvklfYDH7pqiYfU-PYrZQflSyRYPXwoi-TgrJsA/exec";
+
+let currentInfoPanel = 0;
+function rotateInfoPanel(){
+  const panels=document.querySelectorAll(".info-panel");
+  const dots=document.querySelectorAll(".info-dot");
+  if(!panels.length) return;
+  panels.forEach((panel,index)=>panel.classList.toggle("active",index===currentInfoPanel));
+  dots.forEach((dot,index)=>dot.classList.toggle("active",index===currentInfoPanel));
+  currentInfoPanel=(currentInfoPanel+1)%panels.length;
+}
+function formatHm(dateValue){
+  const d=dateValue?new Date(dateValue):new Date();
+  return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+function estimateWbgt(tempC,humidity,solarWm2,windKmh){
+  const solarKw=Math.max(0,Number(solarWm2)||0)/1000;
+  const windMs=Math.max(0,Number(windKmh)||0)/3.6;
+  const t=Number(tempC),rh=Number(humidity);
+  const wbgt=0.735*t+0.0374*rh+0.00292*t*rh+7.619*solarKw-4.557*solarKw*solarKw-0.0572*windMs-4.064;
+  return Math.max(-10,Math.min(50,wbgt));
+}
+function getHeatLevel(wbgt){
+  if(wbgt>=31)return{label:"危険",color:"#c026d3",soft:"#e879f9",pale:"#f5d0fe",background:"linear-gradient(90deg,rgba(192,38,211,.16),rgba(192,38,211,0) 58%)",main:"外出は炎天下を避けてください",sub:"水分・塩分を補給し、屋外作業は十分な休憩を確保してください"};
+  if(wbgt>=28)return{label:"厳重警戒",color:"#ef4444",soft:"#f87171",pale:"#fecaca",background:"linear-gradient(90deg,rgba(239,68,68,.15),rgba(239,68,68,0) 58%)",main:"激しい運動や長時間の屋外作業は控えてください",sub:"こまめな水分・塩分補給と休憩を徹底してください"};
+  if(wbgt>=25)return{label:"警戒",color:"#fb923c",soft:"#fdba74",pale:"#fed7aa",background:"linear-gradient(90deg,rgba(251,146,60,.14),rgba(251,146,60,0) 58%)",main:"積極的に休憩と水分補給を行ってください",sub:"体調の変化に注意し、無理な作業は避けてください"};
+  if(wbgt>=21)return{label:"注意",color:"#facc15",soft:"#fde047",pale:"#fef08a",background:"linear-gradient(90deg,rgba(250,204,21,.12),rgba(250,204,21,0) 58%)",main:"こまめな水分補給を心がけてください",sub:"長時間の作業では定期的に休憩してください"};
+  return{label:"ほぼ安全",color:"#22c55e",soft:"#4ade80",pale:"#bbf7d0",background:"linear-gradient(90deg,rgba(34,197,94,.11),rgba(34,197,94,0) 58%)",main:"現在の暑さ指数は低い状態です",sub:"作業中も水分補給を忘れないようにしてください"};
+}
+function applyHeatDisplay(wbgt,acquiredTime){
+  const level=getHeatLevel(wbgt),panel=document.getElementById("heatPanel"),badge=document.getElementById("heatBadge"),value=document.getElementById("heatIndexValue"),updated=document.getElementById("heatUpdated"),main=document.getElementById("heatMain"),sub=document.getElementById("heatSub"),icon=panel.querySelector(".info-icon"),title=panel.querySelector(".info-title"),dot=document.querySelector(".heat-dot");
+  panel.style.borderLeftColor=level.color;panel.style.background=level.background;badge.textContent=level.label;badge.style.background=level.color;value.textContent=wbgt.toFixed(1);value.style.color=level.soft;updated.textContent="取得 "+formatHm(acquiredTime);main.textContent=level.main;sub.textContent=level.sub+"（推定値）";icon.style.color=level.soft;title.style.color=level.soft;main.style.color=level.soft;sub.style.color=level.pale;dot.style.background=level.color;
+}
+function applyRainDisplay(times,precipitation,acquiredTime){
+  const now=Date.now();
+  const items=times.map((t,i)=>({time:new Date(t),mm:Number(precipitation[i])||0})).filter(x=>x.time.getTime()>=now-15*60*1000);
+  const nextRain=items.find(x=>x.mm>=0.1),maxRain=items.slice(0,8).reduce((m,x)=>Math.max(m,x.mm),0),main=document.getElementById("rainMain"),sub=document.getElementById("rainSub"),panel=document.getElementById("rainPanel");
+  if(nextRain){
+    const minutes=Math.max(0,Math.round((nextRain.time.getTime()-now)/60000));
+    panel.style.borderLeftColor="#38bdf8";main.style.color="#7dd3fc";main.textContent=minutes<=15?"まもなく雨が降る見込みです":"約"+minutes+"分後に雨の見込みです";sub.textContent="今後2時間の最大降水量 "+maxRain.toFixed(1)+"mm / 15分　取得 "+formatHm(acquiredTime);
+  }else{
+    panel.style.borderLeftColor="#22c55e";main.style.color="#86efac";main.textContent="現在、雨雲の接近情報はありません";sub.textContent="今後2時間の降水予測　取得 "+formatHm(acquiredTime);
+  }
+}
+async function loadOperationalWeather(){
+  const url="https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,relative_humidity_2m,shortwave_radiation,wind_speed_10m&minutely_15=precipitation&forecast_minutely_15=8&timezone=Asia%2FTokyo";
+  try{
+    const res=await fetch(url,{cache:"no-store"});if(!res.ok)throw new Error("weather api error");
+    const data=await res.json(),c=data.current;
+    const wbgt=estimateWbgt(c.temperature_2m,c.relative_humidity_2m,c.shortwave_radiation,c.wind_speed_10m);
+    applyHeatDisplay(wbgt,c.time);applyRainDisplay(data.minutely_15.time,data.minutely_15.precipitation,c.time);
+  }catch(error){
+    document.getElementById("heatBadge").textContent="取得エラー";document.getElementById("heatMain").textContent="暑さ指数を取得できませんでした";document.getElementById("heatSub").textContent="通信状態を確認してください";document.getElementById("rainMain").textContent="雨雲情報を取得できませんでした";document.getElementById("rainSub").textContent="通信状態を確認してください";console.error(error);
+  }
+}
+
 
 let latestNoticeText = "";
 let latestTelopSpeed = 25;
@@ -973,6 +1136,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadData();
   loadWeather();
+  loadOperationalWeather();
+  rotateInfoPanel();
 
   setInterval(updateScreenSaverClock,1000);
   setInterval(checkScreenSaver,1000);
@@ -980,8 +1145,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // 搬入出予定・納品引取は30秒ごとに更新
   setInterval(loadData,30000);
 
-  // 天気は10分ごとに更新
+  // 天気・暑さ指数・雨雲情報は10分ごとに更新
   setInterval(loadWeather,600000);
+  setInterval(loadOperationalWeather,600000);
+
+  // 熱中症情報と雨雲情報を15秒ごとに切替
+  setInterval(rotateInfoPanel,15000);
 
   // ブラウザ復帰時にinformationテロップを再起動
   document.addEventListener("visibilitychange", () => {
