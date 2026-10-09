@@ -278,23 +278,27 @@ font-family:
 
 .notice-text{
   position:absolute;
-  left:0;
+  left:100%;
+  top:0;
   white-space:nowrap;
   line-height:60px;
   font-size:34px;
   font-weight:bold;
 
-  animation:scroll 25s linear infinite;
+  animation:none;
   will-change:transform;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform:translate3d(0,0,0);
 }
 
 @keyframes scroll{
   from{
-    transform:translateX(100vw);
+    transform:translate3d(0,0,0);
   }
 
   to{
-    transform:translateX(-100%);
+    transform:translate3d(calc(-100vw - 100%),0,0);
   }
 }
 
@@ -811,7 +815,7 @@ function applyNoticeText(forceRestart){
 
   if(noticeEl.dataset.text !== latestNoticeText){
     noticeEl.dataset.text = latestNoticeText;
-    noticeEl.innerHTML = latestNoticeText;
+    noticeEl.textContent = latestNoticeText;
     forceRestart = true;
   }
 
@@ -821,9 +825,15 @@ function applyNoticeText(forceRestart){
     noticeLoopCount = 0;
 
     noticeEl.style.animation = "none";
+    noticeEl.style.transform = "translate3d(0,0,0)";
+
+    // Safariでアニメーション再開時の描画欠けを防ぐ
     void noticeEl.offsetWidth;
-    noticeEl.style.animation =
-      `scroll ${latestTelopSpeed}s linear infinite`;
+
+    requestAnimationFrame(() => {
+      noticeEl.style.animation =
+        `scroll ${latestTelopSpeed}s linear infinite`;
+    });
 
   }
 
