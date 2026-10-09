@@ -292,7 +292,7 @@ font-family:
   transform:translate3d(0,0,0);
 }
 
-@keyframes scroll{
+@keyframes scrollOnce{
   from{
     transform:translate3d(0,0,0);
   }
@@ -649,6 +649,7 @@ let latestTelopSpeed = 25;
 let noticeLoopCount = 0;
 let noticeInitialized = false;
 let noticeLoading = false;
+let noticeRestartTimer = null;
 
 function updateClock(){
 
@@ -820,22 +821,35 @@ function applyNoticeText(forceRestart){
   }
 
   if(forceRestart || !noticeInitialized){
-
     noticeInitialized = true;
     noticeLoopCount = 0;
+    startNoticeScroll();
+  }
 
-    noticeEl.style.animation = "none";
-    noticeEl.style.transform = "translate3d(0,0,0)";
+}
 
-    // Safariでアニメーション再開時の描画欠けを防ぐ
-    void noticeEl.offsetWidth;
 
+function startNoticeScroll(){
+
+  const noticeEl = document.getElementById("notice");
+
+  if(noticeRestartTimer){
+    clearTimeout(noticeRestartTimer);
+    noticeRestartTimer = null;
+  }
+
+  noticeEl.style.animation = "none";
+  noticeEl.style.transform = "translate3d(0,0,0)";
+
+  // Safariで位置を確実に初期化してから1周だけ開始
+  void noticeEl.offsetWidth;
+
+  requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       noticeEl.style.animation =
-        `scroll ${latestTelopSpeed}s linear infinite`;
+        `scrollOnce ${latestTelopSpeed}s linear 1`;
     });
-
-  }
+  });
 
 }
 
@@ -871,15 +885,32 @@ function initNoticeLoop(){
 
   const noticeEl = document.getElementById("notice");
 
-  noticeEl.addEventListener("animationiteration", () => {
+  noticeEl.addEventListener("animationend", (event) => {
+
+    if(event.animationName !== "scrollOnce"){
+      return;
+    }
 
     noticeLoopCount++;
 
-    // informationを2回流したら、次の内容を取得して反映
+    // 2周ごとに最新のinformationを取得
     if(noticeLoopCount >= 2){
-
       noticeLoopCount = 0;
-      loadNotice();
+
+      loadNotice().finally(() => {
+        noticeRestartTimer = setTimeout(
+          startNoticeScroll,
+          250
+        );
+      });
+
+    }else{
+
+      // 毎回完全にリセットして次の1周を開始
+      noticeRestartTimer = setTimeout(
+        startNoticeScroll,
+        250
+      );
 
     }
 
