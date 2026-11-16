@@ -46,7 +46,7 @@ sans-serif;
 }
 
 .left{
-  padding:20px 20px 20px 30px;
+  padding:5px 20px 20px 30px;
 }
 
 /* 定期便：月・水・金の14:30～15:30のみ表示 */
@@ -54,8 +54,8 @@ sans-serif;
   display:none;
   margin:0 0 18px 0;
   padding:14px 18px 12px;
-  background:#fff7e6;
-  border:1px solid #f0d9ad;
+  background:#d8d2c5;
+  border:1px solid #bdb5a6;
   border-radius:10px;
 }
 .regular-delivery-header{
@@ -81,12 +81,12 @@ sans-serif;
   border-radius:8px;
 }
 .regular-delivery-column.received{
-  background:#e7f2ff;
-  border-color:#c7ddf8;
+  background:#c4d0dc;
+  border-color:#aab8c6;
 }
 .regular-delivery-column.sent{
-  background:#fff0e3;
-  border-color:#f5d4ba;
+  background:#d8c8b9;
+  border-color:#c2ad9b;
 }
 .regular-delivery-column-title{
   font-size:21px;
@@ -541,9 +541,6 @@ sans-serif;
 
   <div class="left">
 
-    <div class="title" id="scheduleTitle">
-    </div>
-
     <div class="regular-delivery-panel" id="regularDeliveryPanel">
       <div class="regular-delivery-header">
         <div class="regular-delivery-title">定期便</div>
@@ -559,6 +556,9 @@ sans-serif;
         </div>
       </div>
       <div class="regular-delivery-note" id="regularDeliveryNote"></div>
+    </div>
+
+    <div class="title" id="scheduleTitle">
     </div>
 
     <div id="schedule">
