@@ -54,8 +54,8 @@ sans-serif;
   display:none;
   margin:0 0 18px 0;
   padding:14px 18px 12px;
-  background:#161b22;
-  border-left:8px solid #f59e0b;
+  background:#fff7e6;
+  border:1px solid #f0d9ad;
   border-radius:10px;
 }
 .regular-delivery-header{
@@ -67,11 +67,7 @@ sans-serif;
 .regular-delivery-title{
   font-size:30px;
   font-weight:800;
-  color:#fbbf24;
-}
-.regular-delivery-time{
-  font-size:18px;
-  color:#9ca3af;
+  color:#754c12;
 }
 .regular-delivery-columns{
   display:grid;
@@ -81,22 +77,24 @@ sans-serif;
 .regular-delivery-column{
   min-width:0;
   padding:8px 12px;
+  border:1px solid transparent;
   border-radius:8px;
-  background:#202734;
 }
 .regular-delivery-column.received{
-  border-left:5px solid #3b82f6;
+  background:#e7f2ff;
+  border-color:#c7ddf8;
 }
 .regular-delivery-column.sent{
-  border-left:5px solid #f97316;
+  background:#fff0e3;
+  border-color:#f5d4ba;
 }
 .regular-delivery-column-title{
   font-size:21px;
   font-weight:800;
   margin-bottom:5px;
 }
-.regular-delivery-column.received .regular-delivery-column-title{color:#60a5fa;}
-.regular-delivery-column.sent .regular-delivery-column-title{color:#fb923c;}
+.regular-delivery-column.received .regular-delivery-column-title{color:#1d4f91;}
+.regular-delivery-column.sent .regular-delivery-column-title{color:#a64b16;}
 .regular-delivery-item{
   display:flex;
   align-items:baseline;
@@ -105,6 +103,7 @@ sans-serif;
   font-size:21px;
   line-height:1.35;
   padding:2px 0;
+  color:#263445;
 }
 .regular-delivery-item-name{
   min-width:0;
@@ -114,18 +113,18 @@ sans-serif;
 }
 .regular-delivery-item-quantity{
   flex:none;
-  color:#e5e7eb;
+  color:#263445;
   white-space:nowrap;
 }
 .regular-delivery-empty{
   font-size:20px;
-  color:#9ca3af;
+  color:#64748b;
   padding:4px 0;
 }
 .regular-delivery-note{
   margin-top:7px;
   font-size:16px;
-  color:#9ca3af;
+  color:#64748b;
 }
 
 .right{
@@ -394,7 +393,6 @@ sans-serif;
 
   .regular-delivery-panel{padding:10px 12px;margin-bottom:12px;}
   .regular-delivery-title{font-size:23px;}
-  .regular-delivery-time{font-size:15px;}
   .regular-delivery-column-title{font-size:17px;}
   .regular-delivery-item{font-size:17px;}
   .regular-delivery-empty{font-size:16px;}
@@ -549,7 +547,6 @@ sans-serif;
     <div class="regular-delivery-panel" id="regularDeliveryPanel">
       <div class="regular-delivery-header">
         <div class="regular-delivery-title">定期便</div>
-        <div class="regular-delivery-time">15:00前後（14:30～15:30）</div>
       </div>
       <div class="regular-delivery-columns">
         <div class="regular-delivery-column received">
