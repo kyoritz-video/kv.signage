@@ -32,7 +32,7 @@ main{max-width:1500px;margin:0 auto;padding:22px 28px 40px}
 .sent{background:var(--orange-bg);border-color:var(--orange-line)}
 .column-title{font-size:17px;font-weight:800;margin-bottom:6px}
 .received .column-title{color:var(--blue)}.sent .column-title{color:var(--orange)}
-.item{display:flex;justify-content:flex-start;align-items:baseline;gap:8px;padding:3px 0;font-size:17px;line-height:1.4}
+.item{display:flex;justify-content:flex-start;align-items:baseline;gap:24px;padding:3px 0;font-size:17px;line-height:1.4}
 .item-name{min-width:0;overflow-wrap:anywhere}.quantity{flex:none;white-space:nowrap;color:#e5e7eb;font-weight:700}
 .none{color:var(--muted);font-size:15px;padding:3px 0}
 .note{margin-top:10px;color:var(--muted);font-size:14px;white-space:pre-wrap}
@@ -72,8 +72,9 @@ function dayCard(date,data){
   const received=data&&Array.isArray(data.receivedItems)?data.receivedItems:[];
   const sent=data&&Array.isArray(data.sentItems)?data.sentItems:[];
   const title=(date.getMonth()+1)+"月"+date.getDate()+"日";
+  const operator=data&&(data.operator||data.registeredBy||data.updatedBy)?(data.operator||data.registeredBy||data.updatedBy):"";
   return '<article class="day-card '+(has?"":"empty")+'">'+
-    '<div class="day-head"><span class="day-date">'+title+'</span><span class="day-week">('+WEEK[date.getDay()]+')</span><span class="day-tag">'+(has?"定期便登録あり":"登録なし")+'</span></div>'+
+    '<div class="day-head"><span class="day-date">'+title+'</span><span class="day-week">('+WEEK[date.getDay()]+')</span><span class="day-tag">'+(has?"定期便登録あり"+(operator?'　登録者：'+esc(operator):""):"登録なし")+'</span></div>'+
     '<div class="columns"><section class="column received"><div class="column-title">受取機材</div>'+itemList(received)+'</section>'+
     '<section class="column sent"><div class="column-title">送り機材</div>'+itemList(sent)+'</section></div>'+
     (data&&data.note?'<div class="note">備考：'+esc(data.note)+'</div>':"")+
