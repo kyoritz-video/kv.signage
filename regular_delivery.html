@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>定期便 週間確認</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1117;--surface:#161b22;--line:#303844;--text:#f3f4f6;--muted:#9ca3af;--blue-bg:#202b38;--blue-line:#35485d;--blue:#93c5fd;--orange-bg:#302720;--orange-line:#4a3b30;--orange:#fdba74}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji","Meiryo",sans-serif;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 30px;background:var(--surface);border-bottom:1px solid #252d38}
+h1{font-size:clamp(24px,3vw,38px);margin:0;font-weight:800}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.controls label{font-size:15px;color:var(--muted)}
+input[type=date]{background:#0d1117;color:var(--text);border:1px solid #46515f;border-radius:8px;padding:10px 12px;font:inherit;font-size:16px}
+button{border:1px solid #46515f;background:#222b36;color:var(--text);border-radius:8px;padding:10px 15px;font:inherit;cursor:pointer}
+button:hover{background:#303b49}
+main{max-width:1500px;margin:0 auto;padding:22px 28px 40px}
+.range{color:var(--muted);font-size:16px;margin:0 0 18px}
+#status{color:var(--muted);padding:30px;text-align:center;font-size:18px}
+.day-list{display:grid;grid-template-columns:1fr;gap:14px}
+.day-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.day-card.empty{opacity:.62}
+.day-head{display:flex;align-items:baseline;gap:12px;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid #3b4552}
+.day-date{font-size:23px;font-weight:800}
+.day-week{font-size:17px;color:var(--muted)}
+.day-tag{margin-left:auto;font-size:13px;color:var(--muted)}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.column{min-width:0;padding:11px 14px;border:1px solid;border-radius:8px}
+.received{background:var(--blue-bg);border-color:var(--blue-line)}
+.sent{background:var(--orange-bg);border-color:var(--orange-line)}
+.column-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.received .column-title{color:var(--blue)}.sent .column-title{color:var(--orange)}
+.item{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:3px 0;font-size:17px;line-height:1.4}
+.item-name{min-width:0;overflow-wrap:anywhere}.quantity{flex:none;white-space:nowrap;color:#e5e7eb}
+.none{color:var(--muted);font-size:15px;padding:3px 0}
+.note{margin-top:10px;color:var(--muted);font-size:14px;white-space:pre-wrap}
+@media(max-width:700px){header{align-items:flex-start;flex-direction:column;padding:18px}main{padding:16px}.columns{grid-template-columns:1fr}.day-date{font-size:20px}.day-card{padding:13px}.day-tag{font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>定期便 週間確認</h1>
+  <div class="controls">
+    <label for="startDate">開始日</label>
+    <input type="date" id="startDate">
+    <button type="button" id="todayBtn">今日から</button>
+    <button type="button" id="loadBtn">表示</button>
+  </div>
+</header>
+<main>
+  <p class="range" id="rangeLabel">開始日から7日間</p>
+  <div id="status">読み込み準備中...</div>
+  <section class="day-list" id="dayList"></section>
+</main>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzHLMweMXbWOIPgst29lFFuSmNDCQwDvklfYDH7pqiYfU-PYrZQflSyRYPXwoi-TgrJsA/exec";
+const WEEK = ["日","月","火","水","木","金","土"];
+const $ = id => document.getElementById(id);
+function localDateString(date){
+  return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
+}
+function parseLocalDate(text){const [y,m,d]=text.split("-").map(Number);return new Date(y,m-1,d,12,0,0);}
+function esc(value){return String(value==null?"":value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+function itemList(items){
+  if(!Array.isArray(items)||!items.length)return '<div class="none">登録なし</div>';
+  return items.map(item=>'<div class="item"><span class="item-name">'+esc(item.name)+'</span><span class="quantity">'+esc(item.quantity)+'</span></div>').join("");
+}
+function dayCard(date,data){
+  const ymd=localDateString(date),has=!!data;
+  const received=data&&Array.isArray(data.receivedItems)?data.receivedItems:[];
+  const sent=data&&Array.isArray(data.sentItems)?data.sentItems:[];
+  const title=(date.getMonth()+1)+"月"+date.getDate()+"日";
+  return '<article class="day-card '+(has?"":"empty")+'">'+
+    '<div class="day-head"><span class="day-date">'+title+'</span><span class="day-week">('+WEEK[date.getDay()]+')</span><span class="day-tag">'+(has?"定期便登録あり":"登録なし")+'</span></div>'+
+    '<div class="columns"><section class="column received"><div class="column-title">受取機材</div>'+itemList(received)+'</section>'+
+    '<section class="column sent"><div class="column-title">送り機材</div>'+itemList(sent)+'</section></div>'+
+    (data&&data.note?'<div class="note">備考：'+esc(data.note)+'</div>':"")+
+    '</article>';
+}
+async function loadWeek(){
+  const startText=$("startDate").value;
+  if(!startText){$("status").textContent="開始日を選択してください";return;}
+  const start=parseLocalDate(startText);
+  const dates=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return d;});
+  const end=dates[6];
+  $("rangeLabel").textContent=localDateString(start)+" ～ "+localDateString(end)+"（7日間）";
+  $("status").textContent="定期便の予定を取得しています...";
+  $("dayList").innerHTML="";
+  try{
+    const results=await Promise.all(dates.map(async date=>{
+      const url=API_URL+"?date="+encodeURIComponent(localDateString(date));
+      const response=await fetch(url,{cache:"no-store"});
+      if(!response.ok)throw new Error("通信エラー（"+localDateString(date)+"）");
+      const json=await response.json();
+      return json.regularDelivery||null;
+    }));
+    $("dayList").innerHTML=dates.map((date,i)=>dayCard(date,results[i])).join("");
+    $("status").textContent="";
+  }catch(error){
+    $("status").textContent="予定を取得できませんでした。通信状態やApps Scriptの公開設定を確認してください。";
+    console.error(error);
+  }
+}
+$("startDate").value=localDateString(new Date());
+$("loadBtn").addEventListener("click",loadWeek);
+$("todayBtn").addEventListener("click",()=>{$("startDate").value=localDateString(new Date());loadWeek();});
+$("startDate").addEventListener("change",loadWeek);
+loadWeek();
+</script>
+</body>
+</html>
