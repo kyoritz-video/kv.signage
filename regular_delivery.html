@@ -50,7 +50,7 @@ main{max-width:1500px;margin:0 auto;padding:22px 28px 40px}
   </div>
 </header>
 <main>
-  <p class="range" id="rangeLabel">開始日から7日間（月・水・金のみ表示）</p>
+  <p class="range" id="rangeLabel">開始日から5件表示</p>
   <div id="status">読み込み準備中...</div>
   <section class="day-list" id="dayList"></section>
 </main>
@@ -83,10 +83,14 @@ async function loadWeek(){
   const startText=$("startDate").value;
   if(!startText){$("status").textContent="開始日を選択してください";return;}
   const start=parseLocalDate(startText);
-  const allDates=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return d;});
-  const dates=allDates.filter(date=>[1,3,5].includes(date.getDay()));
-  const end=allDates[6];
-  $("rangeLabel").textContent=localDateString(start)+" ～ "+localDateString(end)+"（月・水・金のみ表示）";
+  const dates=[];
+  const cursor=new Date(start);
+  while(dates.length<5){
+    if([1,3,5].includes(cursor.getDay())) dates.push(new Date(cursor));
+    cursor.setDate(cursor.getDate()+1);
+  }
+  const end=dates[dates.length-1];
+  $("rangeLabel").textContent=localDateString(start)+" ～ "+localDateString(end)+"（5件）";
   $("status").textContent="定期便の予定を取得しています...";
   $("dayList").innerHTML="";
   try{
