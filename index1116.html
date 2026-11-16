@@ -49,25 +49,27 @@ sans-serif;
   padding:5px 20px 20px 30px;
 }
 
-/* 定期便：月・水・金の14:30～15:30のみ表示 */
+/* 定期便カード：右側の情報カードと統一したダークデザイン */
 .regular-delivery-panel{
   display:none;
   margin:0 0 18px 0;
-  padding:14px 18px 12px;
-  background:#d8d2c5;
-  border:1px solid #bdb5a6;
-  border-radius:10px;
+  padding:16px 20px;
+  background:#161b22;
+  border:1px solid #303844;
+  border-radius:12px;
 }
 .regular-delivery-header{
   display:flex;
   align-items:center;
   gap:14px;
-  margin-bottom:10px;
+  margin-bottom:15px;
+  padding-bottom:10px;
+  border-bottom:1px solid #444;
 }
 .regular-delivery-title{
   font-size:30px;
   font-weight:800;
-  color:#393a38;
+  color:#f3f4f6;
 }
 .regular-delivery-columns{
   display:grid;
@@ -76,25 +78,25 @@ sans-serif;
 }
 .regular-delivery-column{
   min-width:0;
-  padding:8px 12px;
-  border:1px solid transparent;
+  padding:10px 14px;
+  border:1px solid #303844;
   border-radius:8px;
 }
 .regular-delivery-column.received{
-  background:#c4d0dc;
-  border-color:#aab8c6;
+  background:#202b38;
+  border-color:#35485d;
 }
 .regular-delivery-column.sent{
-  background:#d8c8b9;
-  border-color:#c2ad9b;
+  background:#302720;
+  border-color:#4a3b30;
 }
 .regular-delivery-column-title{
   font-size:21px;
   font-weight:800;
   margin-bottom:5px;
 }
-.regular-delivery-column.received .regular-delivery-column-title{color:#34495b;}
-.regular-delivery-column.sent .regular-delivery-column-title{color:#684b35;}
+.regular-delivery-column.received .regular-delivery-column-title{color:#93c5fd;}
+.regular-delivery-column.sent .regular-delivery-column-title{color:#fdba74;}
 .regular-delivery-item{
   display:flex;
   align-items:baseline;
@@ -103,7 +105,7 @@ sans-serif;
   font-size:21px;
   line-height:1.35;
   padding:2px 0;
-  color:#30343a;
+  color:#e5e7eb;
 }
 .regular-delivery-item-name{
   min-width:0;
@@ -113,18 +115,18 @@ sans-serif;
 }
 .regular-delivery-item-quantity{
   flex:none;
-  color:#30343a;
+  color:#e5e7eb;
   white-space:nowrap;
 }
 .regular-delivery-empty{
   font-size:20px;
-  color:#555b63;
+  color:#9ca3af;
   padding:4px 0;
 }
 .regular-delivery-note{
   margin-top:7px;
   font-size:16px;
-  color:#555b63;
+  color:#9ca3af;
 }
 
 .right{
@@ -391,7 +393,7 @@ sans-serif;
 
 @media screen and (max-width:1400px){
 
-  .regular-delivery-panel{padding:10px 12px;margin-bottom:12px;}
+  .regular-delivery-panel{padding:13px 16px;margin-bottom:12px;}
   .regular-delivery-title{font-size:23px;}
   .regular-delivery-column-title{font-size:17px;}
   .regular-delivery-item{font-size:17px;}
