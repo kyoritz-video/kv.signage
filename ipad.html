@@ -556,6 +556,59 @@ body{
   50%{ opacity:.55; }
 }
 
+
+/* 定期便表示 */
+.regular-delivery-card{
+  display:none;
+  background:#161b22;
+  border-radius:12px;
+  padding:12px 18px;
+  margin:0 0 14px 0;
+  color:#f3f4f6;
+}
+.regular-delivery-heading{
+  font-size:30px;
+  font-weight:800;
+  margin-bottom:8px;
+  padding-bottom:6px;
+  border-bottom:1px solid #444;
+}
+.regular-delivery-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+.regular-delivery-direction{
+  font-size:21px;
+  font-weight:800;
+  color:#d1d5db;
+  margin-bottom:5px;
+}
+.regular-delivery-items{
+  font-size:22px;
+  font-weight:700;
+  line-height:1.35;
+}
+.regular-delivery-item{
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  white-space:nowrap;
+}
+.regular-delivery-quantity{
+  flex:0 0 auto;
+}
+.regular-delivery-empty{
+  color:#9ca3af;
+  font-size:20px;
+}
+.regular-delivery-note{
+  margin-top:7px;
+  color:#9ca3af;
+  font-size:16px;
+  font-weight:600;
+}
+
 </style>
 
 </head>
@@ -576,6 +629,21 @@ body{
 <div class="main">
 
   <div class="left">
+
+    <div class="regular-delivery-card" id="regularDeliveryCard">
+      <div class="regular-delivery-heading">定期便</div>
+      <div class="regular-delivery-columns">
+        <div>
+          <div class="regular-delivery-direction">厚木 → 本社</div>
+          <div class="regular-delivery-items" id="regularDeliveryReceived"></div>
+        </div>
+        <div>
+          <div class="regular-delivery-direction">本社 → 厚木</div>
+          <div class="regular-delivery-items" id="regularDeliverySent"></div>
+        </div>
+      </div>
+      <div class="regular-delivery-note" id="regularDeliveryNote"></div>
+    </div>
 
     <div class="title" id="scheduleTitle">
     </div>
@@ -1007,6 +1075,48 @@ document.getElementById("weather").innerHTML = `
 }
 
 
+
+function escapeRegularDeliveryHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
+
+function renderRegularDelivery(data){
+  const card = document.getElementById("regularDeliveryCard");
+  const now = new Date();
+  const day = now.getDay();
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  const visibleDay = [1,3,5].includes(day);
+  const visibleTime = minutes >= 9 * 60 && minutes <= 15 * 60 + 30;
+
+  if(!visibleDay || !visibleTime){
+    card.style.display = "none";
+    return;
+  }
+
+  card.style.display = "block";
+
+  const renderItems = (items, targetId) => {
+    const target = document.getElementById(targetId);
+    if(!Array.isArray(items) || items.length === 0){
+      target.innerHTML = '<div class="regular-delivery-empty">予定なし</div>';
+      return;
+    }
+    target.innerHTML = items.map(item => {
+      const name = escapeRegularDeliveryHtml(item.name || "");
+      const quantity = escapeRegularDeliveryHtml(item.quantity || "");
+      return `<div class="regular-delivery-item"><span>${name}</span><span class="regular-delivery-quantity">${quantity}</span></div>`;
+    }).join("");
+  };
+
+  renderItems(data && data.receivedItems, "regularDeliveryReceived");
+  renderItems(data && data.sentItems, "regularDeliverySent");
+
+  const note = data && data.note ? String(data.note) : "";
+  document.getElementById("regularDeliveryNote").textContent = note;
+}
+
 async function loadData(){
 
   const res = await fetch(
@@ -1016,6 +1126,8 @@ async function loadData(){
    }
    );
   const data = await res.json();
+
+  renderRegularDelivery(data.regularDelivery);
 
 const now = new Date();
 
