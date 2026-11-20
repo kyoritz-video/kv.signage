@@ -49,6 +49,106 @@ font-family:
   padding:20px 20px 20px 30px;
 }
 
+/* 定期便表示 */
+.regular-delivery-panel{
+  display:none;
+  margin:0 0 18px 0;
+  padding:16px 20px;
+  background:#161b22;
+  border:1px solid #303844;
+  border-radius:12px;
+}
+.regular-delivery-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:15px;
+  padding-bottom:10px;
+  border-bottom:1px solid #444;
+}
+.regular-delivery-title{
+  font-size:30px;
+  font-weight:800;
+  color:#f3f4f6;
+}
+.regular-delivery-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.regular-delivery-column{
+  min-width:0;
+  padding:10px 14px;
+  border:1px solid #303844;
+  border-radius:8px;
+}
+.regular-delivery-column.received{
+  background:#202b38;
+  border-color:#35485d;
+}
+.regular-delivery-column.sent{
+  background:#302720;
+  border-color:#4a3b30;
+}
+.regular-delivery-column-title{
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+.regular-delivery-column.received .regular-delivery-column-title{color:#93c5fd;}
+.regular-delivery-column.sent .regular-delivery-column-title{color:#fdba74;}
+.regular-delivery-item{
+  display:flex;
+  align-items:baseline;
+  justify-content:flex-start;
+  gap:28px;
+  font-size:21px;
+  line-height:1.35;
+  padding:2px 0;
+  color:#e5e7eb;
+}
+.regular-delivery-item-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.regular-delivery-item-quantity{
+  flex:none;
+  color:#e5e7eb;
+  white-space:nowrap;
+  font-weight:700;
+}
+.regular-delivery-empty{
+  font-size:20px;
+  color:#9ca3af;
+  padding:4px 0;
+}
+.regular-delivery-note{
+  margin-top:7px;
+  font-size:16px;
+  color:#9ca3af;
+}
+@media screen and (max-width:1400px){
+  .regular-delivery-panel{padding:13px 16px;margin-bottom:12px;}
+  .regular-delivery-title{font-size:23px;}
+  .regular-delivery-column-title{font-size:17px;}
+  .regular-delivery-item{font-size:17px;gap:20px;}
+  .regular-delivery-empty{font-size:16px;}
+  .regular-delivery-note{font-size:13px;}
+}
+@media screen and (min-width:2200px){
+  .regular-delivery-panel{padding:24px 28px;margin-bottom:22px;}
+  .regular-delivery-title{font-size:42px;}
+  .regular-delivery-header{margin-bottom:18px;padding-bottom:14px;}
+  .regular-delivery-columns{gap:24px;}
+  .regular-delivery-column{padding:16px 20px;}
+  .regular-delivery-column-title{font-size:30px;margin-bottom:8px;}
+  .regular-delivery-item{font-size:30px;gap:36px;padding:4px 0;}
+  .regular-delivery-empty{font-size:28px;}
+  .regular-delivery-note{font-size:22px;margin-top:10px;}
+}
+
 .right{
   padding:5px 5px 5px 0;
 }
@@ -502,6 +602,23 @@ font-family:
 
   <div class="left">
 
+    <div class="regular-delivery-panel" id="regularDeliveryPanel">
+      <div class="regular-delivery-header">
+        <div class="regular-delivery-title">定期便</div>
+      </div>
+      <div class="regular-delivery-columns">
+        <div class="regular-delivery-column received">
+          <div class="regular-delivery-column-title">厚木→本社</div>
+          <div id="regularReceivedItems"></div>
+        </div>
+        <div class="regular-delivery-column sent">
+          <div class="regular-delivery-column-title">本社→厚木</div>
+          <div id="regularSentItems"></div>
+        </div>
+      </div>
+      <div class="regular-delivery-note" id="regularDeliveryNote"></div>
+    </div>
+
     <div class="title" id="scheduleTitle">
     </div>
 
@@ -918,6 +1035,41 @@ function initNoticeLoop(){
 
 }
 
+function escapeRegularDeliveryHtml(value){
+  return String(value == null ? "" : value).replace(/[&<>"']/g, function(ch){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+  });
+}
+
+function renderRegularDelivery(regularDelivery){
+  const panel = document.getElementById("regularDeliveryPanel");
+  const now = new Date();
+  const day = now.getDay(); // 日=0、月=1、水=3、金=5
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  const isRegularDeliveryDay = day === 1 || day === 3 || day === 5;
+  const isRegularDeliveryTime = minutes >= 9 * 60 && minutes < 15 * 60 + 30;
+  panel.style.display = isRegularDeliveryDay && isRegularDeliveryTime ? "block" : "none";
+
+  const received = regularDelivery && Array.isArray(regularDelivery.receivedItems) ? regularDelivery.receivedItems : [];
+  const sent = regularDelivery && Array.isArray(regularDelivery.sentItems) ? regularDelivery.sentItems : [];
+
+  function makeItems(items){
+    if(!items.length){
+      return '<div class="regular-delivery-empty">予定なし</div>';
+    }
+    return items.map(function(item){
+      const name = escapeRegularDeliveryHtml(item && item.name);
+      const quantity = escapeRegularDeliveryHtml(item && item.quantity);
+      return '<div class="regular-delivery-item"><span class="regular-delivery-item-name">' + name + '</span><span class="regular-delivery-item-quantity">' + quantity + '</span></div>';
+    }).join("");
+  }
+
+  document.getElementById("regularReceivedItems").innerHTML = makeItems(received);
+  document.getElementById("regularSentItems").innerHTML = makeItems(sent);
+  document.getElementById("regularDeliveryNote").textContent =
+    regularDelivery && regularDelivery.note ? "備考：" + regularDelivery.note : "";
+}
+
 async function loadData(){
 
   try{
@@ -928,6 +1080,8 @@ async function loadData(){
     );
 
     const data = await res.json();
+
+    renderRegularDelivery(data.regularDelivery);
 
     let scheduleHtml = "";
 
