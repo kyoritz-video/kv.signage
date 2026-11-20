@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>共立映像搬入出予定</title>
+
+<style>
+
+body{
+  margin:0;
+  background:#0d1117;
+  color:white;
+font-family:
+  -apple-system,
+  BlinkMacSystemFont,
+  "Hiragino Sans",
+  "Helvetica Neue",
+  sans-serif;
+  overflow:hidden;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#161b22;
+  padding:20px 40px;
+}
+
+.logo{
+  font-size:56px;
+  font-weight:bold;
+}
+
+.clock{
+  font-size:64px;
+  font-weight:bold;
+}
+
+.main{
+  display:grid;
+  grid-template-columns:75% 25%;
+  height:calc(100vh - 180px);
+}
+
+.left{
+  padding:20px 20px 20px 30px;
+}
+
+/* 定期便表示 */
+.regular-delivery-panel{
+  display:none;
+  margin:0 0 18px 0;
+  padding:16px 20px;
+  background:#161b22;
+  border:1px solid #303844;
+  border-radius:12px;
+}
+.regular-delivery-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:15px;
+  padding-bottom:10px;
+  border-bottom:1px solid #444;
+}
+.regular-delivery-title{
+  font-size:30px;
+  font-weight:800;
+  color:#f3f4f6;
+}
+.regular-delivery-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.regular-delivery-column{
+  min-width:0;
+  padding:10px 14px;
+  border:1px solid #303844;
+  border-radius:8px;
+}
+.regular-delivery-column.received{
+  background:#202b38;
+  border-color:#35485d;
+}
+.regular-delivery-column.sent{
+  background:#302720;
+  border-color:#4a3b30;
+}
+.regular-delivery-column-title{
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+.regular-delivery-column.received .regular-delivery-column-title{color:#93c5fd;}
+.regular-delivery-column.sent .regular-delivery-column-title{color:#fdba74;}
+.regular-delivery-item{
+  display:flex;
+  align-items:baseline;
+  justify-content:flex-start;
+  gap:28px;
+  font-size:21px;
+  line-height:1.35;
+  padding:2px 0;
+  color:#e5e7eb;
+}
+.regular-delivery-item-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.regular-delivery-item-quantity{
+  flex:none;
+  color:#e5e7eb;
+  white-space:nowrap;
+  font-weight:700;
+}
+.regular-delivery-empty{
+  font-size:20px;
+  color:#9ca3af;
+  padding:4px 0;
+}
+.regular-delivery-note{
+  margin-top:7px;
+  font-size:16px;
+  color:#9ca3af;
+}
+@media screen and (max-width:1400px){
+  .regular-delivery-panel{padding:13px 16px;margin-bottom:12px;}
+  .regular-delivery-title{font-size:23px;}
+  .regular-delivery-column-title{font-size:17px;}
+  .regular-delivery-item{font-size:17px;gap:20px;}
+  .regular-delivery-empty{font-size:16px;}
+  .regular-delivery-note{font-size:13px;}
+}
+@media screen and (min-width:2200px){
+  .regular-delivery-panel{padding:24px 28px;margin-bottom:22px;}
+  .regular-delivery-title{font-size:42px;}
+  .regular-delivery-header{margin-bottom:18px;padding-bottom:14px;}
+  .regular-delivery-columns{gap:24px;}
+  .regular-delivery-column{padding:16px 20px;}
+  .regular-delivery-column-title{font-size:30px;margin-bottom:8px;}
+  .regular-delivery-item{font-size:30px;gap:36px;padding:4px 0;}
+  .regular-delivery-empty{font-size:28px;}
+  .regular-delivery-note{font-size:22px;margin-top:10px;}
+}
+
+.right{
+  padding:5px 5px 5px 0;
+}
+
+.title{
+  font-size:48px;
+  border-bottom:none;
+  padding-bottom:10px;
+  margin-bottom:20px;
+}
+
+.schedule-row{
+  display:grid;
+
+  grid-template-columns:
+      180px
+      600px
+      280px
+      300px
+      360px;
+
+  column-gap:10px;
+
+  font-size:60px;
+  font-weight:bold;
+  margin-bottom:12px;
+  align-items:center;
+
+  background:#161b22;
+  border-left:8px solid #2563eb;
+  border-radius:10px;
+  padding:12px 10px;
+}
+
+.schedule-row > div{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.schedule-row > div{
+  white-space:nowrap;
+}
+
+.schedule-row{
+  overflow:hidden;
+}
+
+.schedule-cell{
+  overflow:hidden;
+  white-space:nowrap;
+  position:relative;
+}
+
+.schedule-scroll{
+  display:inline-block;
+  white-space:nowrap;
+}
+
+.schedule-cell::after{
+  content:"";
+  position:absolute;
+  top:0;
+  width:20px;
+  height:100%;
+  z-index:10;
+  pointer-events:none;
+}
+
+.schedule-cell span{
+  position:relative;
+  z-index:1;
+}
+
+.schedule-scroll{
+  display:inline-block;
+  white-space:nowrap;
+  transform:translateX(0);
+}
+
+.schedule-cell{
+  overflow:hidden;
+  white-space:nowrap;
+  position:relative;
+}
+
+.schedule-scroll.animate{
+  animation:marquee 18s linear infinite;
+}
+
+.driver-cell .schedule-scroll.animate{
+  animation:driverMarquee 15s linear infinite;
+}
+
+@keyframes driverMarquee{
+
+  0%{
+    transform:translateX(0);
+  }
+
+  20%{
+    transform:translateX(0);
+  }
+
+  100%{
+    transform:translateX(-50%);
+  }
+
+}
+
+
+@keyframes marquee{
+  0%{
+    transform:translateX(0);
+  }
+
+  100%{
+    transform:translateX(-50%);
+  }
+}
+
+.schedule-row:nth-child(odd){
+  background:#1a1f28;
+}
+
+.schedule-row:nth-child(even){
+  background:#202734;
+}
+
+.driver-cell{
+  overflow:hidden !important;
+  min-width:0 !important;
+  max-width:100%;
+}
+
+.driver-cell .schedule-scroll{
+  display:inline-block;
+  white-space:nowrap;
+}
+
+.card{
+  background:#161b22;
+  border-radius:12px;
+  padding:25px;
+  margin-bottom:20px;
+  position:relative;
+}
+
+.card-title{
+  font-size:36px;
+  margin-bottom:15px;
+  border-bottom:1px solid #444;
+  padding-bottom:10px;
+}
+
+.visitor-row{
+  font-size:28px;
+  margin-bottom:12px;
+}
+
+#weather{
+  text-align:center;
+  margin-top:0;
+}
+
+.notice{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:60px;
+  background:#2563eb;
+  display:flex;
+}
+
+.notice-title{
+  width:180px;
+  background:#1d4ed8;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:30px;
+  font-weight:bold;
+}
+
+.notice-scroll{
+  flex:1;
+  overflow:hidden;
+  white-space:nowrap;
+  position:relative;
+}
+
+.notice-scroll::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:50px;
+  height:100%;
+  z-index:10;
+  pointer-events:none;
+
+  background:linear-gradient(
+    to right,
+    #2563eb,
+    rgba(37,99,235,0)
+  );
+}
+
+.notice-scroll::after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:0;
+  width:50px;
+  height:100%;
+  z-index:10;
+  pointer-events:none;
+
+  background:linear-gradient(
+    to left,
+    #2563eb,
+    rgba(37,99,235,0)
+  );
+}
+
+.notice-text{
+  position:absolute;
+  left:100%;
+  top:0;
+  white-space:nowrap;
+  line-height:60px;
+  font-size:34px;
+  font-weight:bold;
+
+  animation:none;
+  will-change:transform;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform:translate3d(0,0,0);
+}
+
+@keyframes scrollOnce{
+  from{
+    transform:translate3d(0,0,0);
+  }
+
+  to{
+    transform:translate3d(calc(-100vw - 100%),0,0);
+  }
+}
+
+@media screen and (min-width:2200px){
+
+  .header{
+    padding:32px 56px;
+  }
+
+  .logo{
+    font-size:84px;
+  }
+
+  .clock{
+    font-size:78px;
+    min-width:1000px;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:"tnum";
+  }
+
+  .main{
+    grid-template-columns:75% 25%;
+    height:calc(100vh - 200px);
+  }
+
+  .schedule-row{
+    grid-template-columns:
+      180px
+      600px
+      280px
+      300px
+      360px;
+
+    font-size:60px;
+    min-height:120px;
+    padding:24px 14px 24px 20px;
+  }
+
+  .card{
+    padding:30px;
+  }
+
+  .card-title{
+    font-size:54px;
+  }
+
+  .visitor-row{
+    font-size:40px;
+  }
+
+  .notice{
+    height:100px;
+  }
+
+  .notice-title{
+    width:300px;
+    font-size:42px;
+  }
+
+  .notice-text{
+    font-size:48px;
+    line-height:100px;
+  }
+}
+
+#screenSaver{
+  display:flex;
+
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  background:#ffffff;
+  color:#111827;
+
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:
+    opacity 1.0s ease,
+    visibility 1.0s ease;
+
+  pointer-events:none;
+}
+
+#screenSaver.show{
+  opacity:1;
+  visibility:visible;
+}
+
+#screenSaverClock{
+  font-size:180px;
+  font-weight:800;
+  letter-spacing:4px;
+  font-variant-numeric:tabular-nums;
+}
+
+#screenSaverDate{
+  margin-top:30px;
+  font-size:48px;
+  font-weight:600;
+  color:#374151;
+}
+
+
+
+/* 業務情報切替カード：熱中症情報／雨雲情報 */
+.info-rotation-card{
+  min-height:150px;
+  padding:18px 22px;
+  overflow:hidden;
+}
+.info-panel{
+  display:none;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .6s ease, transform .6s ease;
+}
+.info-panel.active{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+}
+.info-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+.info-icon{font-size:38px;line-height:1;}
+.info-title{font-size:32px;font-weight:700;}
+.info-main{font-size:30px;font-weight:700;margin-bottom:6px;line-height:1.25;}
+.info-sub{font-size:20px;color:#9ca3af;line-height:1.35;}
+.info-area{margin-left:auto;font-size:18px;color:#9ca3af;white-space:nowrap;}
+.info-dots{display:flex;justify-content:center;gap:10px;margin-top:10px;}
+.info-dot{width:10px;height:10px;border-radius:50%;background:#4b5563;}
+.info-dot.active{background:#60a5fa;}
+.heat-alert{
+  border-left:8px solid #c026d3;
+  padding-left:16px;
+  background:linear-gradient(90deg,rgba(192,38,211,.16),rgba(192,38,211,0) 58%);
+}
+.heat-alert .info-icon,.heat-alert .info-title,.heat-alert .info-main{color:#e879f9;}
+.heat-alert .info-sub{color:#f5d0fe;font-weight:600;}
+.heat-badge{
+  margin-left:auto;padding:5px 13px;border-radius:999px;background:#a21caf;color:#fff;
+  font-size:18px;font-weight:800;letter-spacing:.06em;animation:heatPulse 1.8s ease-in-out infinite;
+}
+.heat-dot{background:#c026d3 !important;}
+@keyframes heatPulse{
+  0%,100%{opacity:1;box-shadow:0 0 0 rgba(192,38,211,0);}
+  50%{opacity:.72;box-shadow:0 0 18px rgba(192,38,211,.55);}
+}
+.heat-meta{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+.heat-index-label{font-size:18px;color:#d8b4fe;font-weight:700;}
+.heat-index-value{font-size:36px;line-height:1;color:#f0abfc;font-weight:900;font-variant-numeric:tabular-nums;}
+.heat-index-unit{font-size:18px;color:#d8b4fe;font-weight:700;}
+.heat-updated{margin-left:auto;font-size:17px;color:#c4b5fd;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.rain-panel{border-left:8px solid #22c55e;padding-left:16px;}
+
+@media screen and (min-width:2200px){
+  .info-rotation-card{min-height:220px;padding:24px 28px;}
+  .info-header{gap:16px;margin-bottom:14px;}
+  .info-icon{font-size:52px;}
+  .info-title{font-size:42px;}
+  .info-area{font-size:24px;}
+  .heat-badge{font-size:24px;padding:7px 18px;}
+  .heat-meta{gap:18px;margin-bottom:10px;}
+  .heat-index-label,.heat-index-unit{font-size:24px;}
+  .heat-index-value{font-size:50px;}
+  .heat-updated{font-size:22px;}
+  .info-main{font-size:38px;margin-bottom:8px;}
+  .info-sub{font-size:27px;}
+  .info-dots{gap:12px;margin-top:14px;}
+  .info-dot{width:14px;height:14px;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+  <div class="logo" id="company">
+    今日の搬入出予定
+  </div>
+
+  <div class="clock" id="clock">
+  </div>
+
+</div>
+
+<div class="main">
+
+  <div class="left">
+
+    <div class="regular-delivery-panel" id="regularDeliveryPanel">
+      <div class="regular-delivery-header">
+        <div class="regular-delivery-title">定期便</div>
+      </div>
+      <div class="regular-delivery-columns">
+        <div class="regular-delivery-column received">
+          <div class="regular-delivery-column-title">厚木→本社</div>
+          <div id="regularReceivedItems"></div>
+        </div>
+        <div class="regular-delivery-column sent">
+          <div class="regular-delivery-column-title">本社→厚木</div>
+          <div id="regularSentItems"></div>
+        </div>
+      </div>
+      <div class="regular-delivery-note" id="regularDeliveryNote"></div>
+    </div>
+
+    <div class="title" id="scheduleTitle">
+    </div>
+
+    <div id="schedule">
+    </div>
+
+  </div>
+
+<div class="right">
+
+  <div class="card" id="weatherCard">
+    <div id="weather">
+      読み込み中...
+    </div>
+  </div>
+
+
+
+  <div class="card info-rotation-card">
+    <div class="info-panel active heat-alert" id="heatPanel" data-index="0">
+      <div class="info-header">
+        <div class="info-icon">☀</div>
+        <div class="info-title">熱中症情報</div>
+        <div class="info-area">東京都心</div>
+        <div class="heat-badge" id="heatBadge">取得中</div>
+      </div>
+      <div class="heat-meta">
+        <span class="heat-index-label">暑さ指数</span>
+        <span class="heat-index-value" id="heatIndexValue">--.-</span>
+        <span class="heat-index-unit">WBGT</span>
+        <span class="heat-updated" id="heatUpdated">取得中</span>
+      </div>
+      <div class="info-main" id="heatMain">暑さ指数を取得しています</div>
+      <div class="info-sub" id="heatSub">東京都心の気象データから推定しています</div>
+    </div>
+
+    <div class="info-panel rain-panel" id="rainPanel" data-index="1">
+      <div class="info-header">
+        <div class="info-icon">☔</div>
+        <div class="info-title">雨雲情報</div>
+        <div class="info-area">東京都心</div>
+      </div>
+      <div class="info-main" id="rainMain">降水予測を取得しています</div>
+      <div class="info-sub" id="rainSub">取得中</div>
+    </div>
+
+    <div class="info-dots">
+      <span class="info-dot active heat-dot"></span>
+      <span class="info-dot"></span>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="card-title">
+      納品・引取
+    </div>
+
+    <div id="visitors">
+    </div>
+
+  </div>
+
+</div>
+
+<div class="notice">
+
+  <div class="notice-title">
+    information
+  </div>
+
+  <div class="notice-scroll">
+
+    <div
+      class="notice-text"
+      id="notice">
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzHLMweMXbWOIPgst29lFFuSmNDCQwDvklfYDH7pqiYfU-PYrZQflSyRYPXwoi-TgrJsA/exec";
+
+let currentInfoPanel = 0;
+function rotateInfoPanel(){
+  const panels=document.querySelectorAll(".info-panel");
+  const dots=document.querySelectorAll(".info-dot");
+  if(!panels.length) return;
+  panels.forEach((panel,index)=>panel.classList.toggle("active",index===currentInfoPanel));
+  dots.forEach((dot,index)=>dot.classList.toggle("active",index===currentInfoPanel));
+  currentInfoPanel=(currentInfoPanel+1)%panels.length;
+}
+function formatHm(dateValue){
+  const d=dateValue?new Date(dateValue):new Date();
+  return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+function estimateWbgt(tempC,humidity,solarWm2,windKmh){
+  const solarKw=Math.max(0,Number(solarWm2)||0)/1000;
+  const windMs=Math.max(0,Number(windKmh)||0)/3.6;
+  const t=Number(tempC),rh=Number(humidity);
+  const wbgt=0.735*t+0.0374*rh+0.00292*t*rh+7.619*solarKw-4.557*solarKw*solarKw-0.0572*windMs-4.064;
+  return Math.max(-10,Math.min(50,wbgt));
+}
+function getHeatLevel(wbgt){
+  if(wbgt>=31)return{label:"危険",color:"#c026d3",soft:"#e879f9",pale:"#f5d0fe",background:"linear-gradient(90deg,rgba(192,38,211,.16),rgba(192,38,211,0) 58%)",main:"外出は炎天下を避けてください",sub:"水分・塩分を補給し、屋外作業は十分な休憩を確保してください"};
+  if(wbgt>=28)return{label:"厳重警戒",color:"#ef4444",soft:"#f87171",pale:"#fecaca",background:"linear-gradient(90deg,rgba(239,68,68,.15),rgba(239,68,68,0) 58%)",main:"激しい運動や長時間の屋外作業は控えてください",sub:"こまめな水分・塩分補給と休憩を徹底してください"};
+  if(wbgt>=25)return{label:"警戒",color:"#fb923c",soft:"#fdba74",pale:"#fed7aa",background:"linear-gradient(90deg,rgba(251,146,60,.14),rgba(251,146,60,0) 58%)",main:"積極的に休憩と水分補給を行ってください",sub:"体調の変化に注意し、無理な作業は避けてください"};
+  if(wbgt>=21)return{label:"注意",color:"#facc15",soft:"#fde047",pale:"#fef08a",background:"linear-gradient(90deg,rgba(250,204,21,.12),rgba(250,204,21,0) 58%)",main:"こまめな水分補給を心がけてください",sub:"長時間の作業では定期的に休憩してください"};
+  return{label:"ほぼ安全",color:"#22c55e",soft:"#4ade80",pale:"#bbf7d0",background:"linear-gradient(90deg,rgba(34,197,94,.11),rgba(34,197,94,0) 58%)",main:"現在の暑さ指数は低い状態です",sub:"作業中も水分補給を忘れないようにしてください"};
+}
+function applyHeatDisplay(wbgt,acquiredTime){
+  const level=getHeatLevel(wbgt),panel=document.getElementById("heatPanel"),badge=document.getElementById("heatBadge"),value=document.getElementById("heatIndexValue"),updated=document.getElementById("heatUpdated"),main=document.getElementById("heatMain"),sub=document.getElementById("heatSub"),icon=panel.querySelector(".info-icon"),title=panel.querySelector(".info-title"),dot=document.querySelector(".heat-dot");
+  panel.style.borderLeftColor=level.color;panel.style.background=level.background;badge.textContent=level.label;badge.style.background=level.color;value.textContent=wbgt.toFixed(1);value.style.color=level.soft;updated.textContent="取得 "+formatHm(acquiredTime);main.textContent=level.main;sub.textContent=level.sub+"（推定値）";icon.style.color=level.soft;title.style.color=level.soft;main.style.color=level.soft;sub.style.color=level.pale;dot.style.background=level.color;
+}
+function applyRainDisplay(times,precipitation,acquiredTime){
+  const now=Date.now();
+  const items=times.map((t,i)=>({time:new Date(t),mm:Number(precipitation[i])||0})).filter(x=>x.time.getTime()>=now-15*60*1000);
+  const nextRain=items.find(x=>x.mm>=0.1),maxRain=items.slice(0,8).reduce((m,x)=>Math.max(m,x.mm),0),main=document.getElementById("rainMain"),sub=document.getElementById("rainSub"),panel=document.getElementById("rainPanel");
+  if(nextRain){
+    const minutes=Math.max(0,Math.round((nextRain.time.getTime()-now)/60000));
+    panel.style.borderLeftColor="#38bdf8";main.style.color="#7dd3fc";main.textContent=minutes<=15?"まもなく雨が降る見込みです":"約"+minutes+"分後に雨の見込みです";sub.textContent="今後2時間の最大降水量 "+maxRain.toFixed(1)+"mm / 15分　取得 "+formatHm(acquiredTime);
+  }else{
+    panel.style.borderLeftColor="#22c55e";main.style.color="#86efac";main.textContent="現在、雨雲の接近情報はありません";sub.textContent="今後2時間の降水予測　取得 "+formatHm(acquiredTime);
+  }
+}
+async function loadOperationalWeather(){
+  const url="https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,relative_humidity_2m,shortwave_radiation,wind_speed_10m&minutely_15=precipitation&forecast_minutely_15=8&timezone=Asia%2FTokyo";
+  try{
+    const res=await fetch(url,{cache:"no-store"});if(!res.ok)throw new Error("weather api error");
+    const data=await res.json(),c=data.current;
+    const wbgt=estimateWbgt(c.temperature_2m,c.relative_humidity_2m,c.shortwave_radiation,c.wind_speed_10m);
+    applyHeatDisplay(wbgt,c.time);applyRainDisplay(data.minutely_15.time,data.minutely_15.precipitation,c.time);
+  }catch(error){
+    document.getElementById("heatBadge").textContent="取得エラー";document.getElementById("heatMain").textContent="暑さ指数を取得できませんでした";document.getElementById("heatSub").textContent="通信状態を確認してください";document.getElementById("rainMain").textContent="雨雲情報を取得できませんでした";document.getElementById("rainSub").textContent="通信状態を確認してください";console.error(error);
+  }
+}
+
+
+let latestNoticeText = "";
+let latestTelopSpeed = 25;
+let noticeLoopCount = 0;
+let noticeInitialized = false;
+let noticeLoading = false;
+let noticeRestartTimer = null;
+
+function updateClock(){
+
+  const now = new Date();
+  const week = ["日","月","火","水","木","金","土"];
+
+  document.getElementById("clock").innerHTML =
+    now.getFullYear() + "年" +
+    (now.getMonth()+1) + "月" +
+    now.getDate() + "日(" +
+    week[now.getDay()] + ") " +
+    now.toLocaleTimeString("ja-JP");
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+function getWeatherText(code){
+
+  const map = {
+    0:"☀ 快晴",
+    1:"🌤 晴れ",
+    2:"⛅ 晴れ時々曇り",
+    3:"☁ 曇り",
+    45:"🌫 霧",
+    48:"🌫 濃霧",
+    51:"🌦 小雨",
+    61:"🌧 雨",
+    63:"🌧 強い雨",
+    71:"❄ 雪",
+    80:"🌦 にわか雨",
+    95:"⛈ 雷雨"
+  };
+
+  return map[code] || "天候不明";
+}
+
+function getWeatherIcon(code){
+
+  if(code == 0) return "☀";
+  if(code <= 2) return "🌤";
+  if(code == 3) return "☁";
+  if(code >= 51 && code <= 67) return "🌧";
+  if(code >= 71 && code <= 77) return "❄";
+  if(code >= 80) return "🌦";
+
+  return "？";
+}
+
+async function loadWeather(){
+
+  try{
+
+    const url =
+      "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&forecast_days=8";
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    let weekWeather = "";
+    const weekNames = ["日","月","火","水","木","金","土"];
+
+    for(let i=1;i<=7;i++){
+
+      const date = new Date(data.daily.time[i]);
+      const day = date.getDay();
+
+      let dayColor = "#cccccc";
+      if(day === 0){
+        dayColor = "#ff8080";
+      }else if(day === 6){
+        dayColor = "#80aaff";
+      }
+
+      weekWeather += `
+        <div style="
+          display:inline-block;
+          width:72px;
+          text-align:center;
+          vertical-align:top;
+          margin:0 3px;
+        ">
+          <div style="font-size:22px;">
+            ${date.getMonth()+1}/${date.getDate()}
+          </div>
+
+          <div style="font-size:18px; color:${dayColor};">
+            (${weekNames[day]})
+          </div>
+
+          <div style="font-size:46px; margin-top:4px;">
+            ${getWeatherIcon(data.daily.weather_code[i])}
+          </div>
+
+          <div style="font-size:18px; margin-top:2px; color:#ff8a80;">
+            ${Math.round(data.daily.temperature_2m_max[i])}℃
+          </div>
+
+          <div style="font-size:18px; color:#80caff;">
+            ${Math.round(data.daily.temperature_2m_min[i])}℃
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById("weather").innerHTML = `
+      <div style="
+        font-size:24px;
+        font-weight:bold;
+        color:#9ca3af;
+        margin-bottom:15px;
+      ">
+        週間天気予報
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:center;
+        gap:10px;
+      ">
+        ${weekWeather}
+      </div>
+    `;
+
+  }catch(e){
+
+    console.error("Weather Error", e);
+    document.getElementById("weather").innerHTML =
+      "天気情報を取得できません";
+
+  }
+
+}
+
+function buildNoticeText(data){
+
+  let text = "";
+
+  if(data.notices && Array.isArray(data.notices)){
+    data.notices.forEach(item=>{
+      if(item.text){
+        text += "　　" + item.text;
+      }
+    });
+  }
+
+  if(text === ""){
+    text = "連絡事項はありません";
+  }
+
+  latestTelopSpeed =
+    data.settings && data.settings.telop_speed
+      ? Number(data.settings.telop_speed)
+      : 25;
+
+  latestNoticeText = text;
+
+}
+
+function applyNoticeText(forceRestart){
+
+  const noticeEl = document.getElementById("notice");
+
+  if(noticeEl.dataset.text !== latestNoticeText){
+    noticeEl.dataset.text = latestNoticeText;
+    noticeEl.textContent = latestNoticeText;
+    forceRestart = true;
+  }
+
+  if(forceRestart || !noticeInitialized){
+    noticeInitialized = true;
+    noticeLoopCount = 0;
+    startNoticeScroll();
+  }
+
+}
+
+
+function startNoticeScroll(){
+
+  const noticeEl = document.getElementById("notice");
+
+  if(noticeRestartTimer){
+    clearTimeout(noticeRestartTimer);
+    noticeRestartTimer = null;
+  }
+
+  noticeEl.style.animation = "none";
+  noticeEl.style.transform = "translate3d(0,0,0)";
+
+  // Safariで位置を確実に初期化してから1周だけ開始
+  void noticeEl.offsetWidth;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      noticeEl.style.animation =
+        `scrollOnce ${latestTelopSpeed}s linear 1`;
+    });
+  });
+
+}
+
+async function loadNotice(){
+
+  if(noticeLoading) return;
+  noticeLoading = true;
+
+  try{
+
+    const res = await fetch(
+      API_URL + "?t=" + Date.now(),
+      { cache:"no-store" }
+    );
+
+    const data = await res.json();
+    buildNoticeText(data);
+    applyNoticeText(false);
+
+  }catch(e){
+
+    console.error("Notice Error", e);
+
+  }finally{
+
+    noticeLoading = false;
+
+  }
+
+}
+
+function initNoticeLoop(){
+
+  const noticeEl = document.getElementById("notice");
+
+  noticeEl.addEventListener("animationend", (event) => {
+
+    if(event.animationName !== "scrollOnce"){
+      return;
+    }
+
+    noticeLoopCount++;
+
+    // 2周ごとに最新のinformationを取得
+    if(noticeLoopCount >= 2){
+      noticeLoopCount = 0;
+
+      loadNotice().finally(() => {
+        noticeRestartTimer = setTimeout(
+          startNoticeScroll,
+          250
+        );
+      });
+
+    }else{
+
+      // 毎回完全にリセットして次の1周を開始
+      noticeRestartTimer = setTimeout(
+        startNoticeScroll,
+        250
+      );
+
+    }
+
+  });
+
+}
+
+function escapeRegularDeliveryHtml(value){
+  return String(value == null ? "" : value).replace(/[&<>"']/g, function(ch){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+  });
+}
+
+function renderRegularDelivery(regularDelivery){
+  const panel = document.getElementById("regularDeliveryPanel");
+  const now = new Date();
+  const day = now.getDay(); // 日=0、月=1、水=3、金=5
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  const isRegularDeliveryDay = day === 1 || day === 3 || day === 5;
+  const isRegularDeliveryTime = minutes >= 9 * 60 && minutes < 15 * 60 + 30;
+  panel.style.display = isRegularDeliveryDay && isRegularDeliveryTime ? "block" : "none";
+
+  const received = regularDelivery && Array.isArray(regularDelivery.receivedItems) ? regularDelivery.receivedItems : [];
+  const sent = regularDelivery && Array.isArray(regularDelivery.sentItems) ? regularDelivery.sentItems : [];
+
+  function makeItems(items){
+    if(!items.length){
+      return '<div class="regular-delivery-empty">予定なし</div>';
+    }
+    return items.map(function(item){
+      const name = escapeRegularDeliveryHtml(item && item.name);
+      const quantity = escapeRegularDeliveryHtml(item && item.quantity);
+      return '<div class="regular-delivery-item"><span class="regular-delivery-item-name">' + name + '</span><span class="regular-delivery-item-quantity">' + quantity + '</span></div>';
+    }).join("");
+  }
+
+  document.getElementById("regularReceivedItems").innerHTML = makeItems(received);
+  document.getElementById("regularSentItems").innerHTML = makeItems(sent);
+  document.getElementById("regularDeliveryNote").textContent =
+    regularDelivery && regularDelivery.note ? "備考：" + regularDelivery.note : "";
+}
+
+async function loadData(){
+
+  try{
+
+    const res = await fetch(
+      API_URL + "?t=" + Date.now(),
+      { cache:"no-store" }
+    );
+
+    const data = await res.json();
+
+    renderRegularDelivery(data.regularDelivery);
+
+    let scheduleHtml = "";
+
+    if(data.schedule && Array.isArray(data.schedule)){
+
+      data.schedule
+        .slice(0,12)
+        .forEach(item=>{
+
+          scheduleHtml += `
+            <div class="schedule-row">
+
+              <div>${
+                item.time === "23:59"
+                  ? "未定"
+                  : item.time
+              }</div>
+
+              <div class="schedule-cell">
+                <div class="schedule-scroll project-scroll">
+                  ${item.project || ""}
+                </div>
+              </div>
+
+              <div class="schedule-cell">
+                <div class="schedule-scroll">
+                  ${item.content || ""}
+                </div>
+              </div>
+
+              <div class="schedule-cell">
+                <div class="schedule-scroll">
+                  ${item.vehicle || ""}
+                </div>
+              </div>
+
+              <div class="schedule-cell driver-cell">
+                <div class="schedule-scroll driver-scroll">
+                  ${item.driver || ""}
+                </div>
+              </div>
+
+            </div>
+          `;
+
+        });
+
+    }
+
+    if(scheduleHtml === ""){
+
+      scheduleHtml = `
+        <div style="
+          height:65vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:90px;
+          font-weight:bold;
+          color:#6b7280;
+        ">
+          本日の搬入出予定はありません
+        </div>
+      `;
+
+    }
+
+    document.getElementById("schedule").innerHTML = scheduleHtml;
+
+    document
+      .querySelectorAll(".project-scroll, .driver-scroll")
+      .forEach(el => {
+
+        if(el.classList.contains("driver-scroll")){
+
+          if(el.textContent.trim().length >= 8){
+            el.innerHTML =
+              el.innerHTML + "　　　" + el.innerHTML;
+            el.classList.add("animate");
+          }
+
+        }else{
+
+          if(el.scrollWidth > el.parentElement.clientWidth){
+            el.innerHTML =
+              el.innerHTML + "　　　" + el.innerHTML;
+            el.classList.add("animate");
+          }
+
+        }
+
+      });
+
+    let visitorsHtml = "";
+
+    if(data.visitors && Array.isArray(data.visitors)){
+
+      data.visitors
+        .slice(0,8)
+        .forEach(item=>{
+
+          visitorsHtml += `
+            <div class="visitor-row">
+              ${
+                item.time === "23:59"
+                  ? "時間未定"
+                  : item.time
+              }
+              ${item.guest || ""}
+              (${item.person || ""})
+            </div>
+          `;
+
+        });
+
+    }
+
+    if(visitorsHtml === ""){
+      visitorsHtml = `
+        <div class="visitor-row">
+          本日の予定はありません
+        </div>
+      `;
+    }
+
+    document.getElementById("visitors").innerHTML = visitorsHtml;
+
+    // 初回だけ、loadDataで取得したinformationを表示開始する
+    // 以降のinformation更新は、2周スクロール後のloadNotice()で行う
+    if(!noticeInitialized){
+      buildNoticeText(data);
+      applyNoticeText(true);
+    }
+
+  }catch(e){
+
+    console.error("Data Error", e);
+
+  }
+
+}
+
+function updateScreenSaverClock(){
+
+  const now = new Date();
+  const week = ["日","月","火","水","木","金","土"];
+
+  const hh = String(now.getHours()).padStart(2,"0");
+  const mm = String(now.getMinutes()).padStart(2,"0");
+
+  document.getElementById("screenSaverClock").innerHTML =
+    `${hh}:${mm}`;
+
+  document.getElementById("screenSaverDate").innerHTML =
+    now.getFullYear() + "年" +
+    (now.getMonth()+1) + "月" +
+    now.getDate() + "日(" +
+    week[now.getDay()] + ")";
+
+  const pos = Math.floor(now.getMinutes() / 5) % 6;
+
+  const clock = document.getElementById("screenSaverClock");
+  const date  = document.getElementById("screenSaverDate");
+
+  const positions = [
+    {top:"50%", left:"50%"},
+    {top:"30%", left:"68%"},
+    {top:"70%", left:"32%"},
+    {top:"30%", left:"32%"},
+    {top:"70%", left:"68%"},
+    {top:"50%", left:"50%"}
+  ];
+
+  const p = positions[pos];
+
+  clock.style.position = "absolute";
+  date.style.position = "absolute";
+
+  clock.style.left = p.left;
+  clock.style.top = p.top;
+  clock.style.transform = "translate(-50%,-50%)";
+
+  date.style.left = p.left;
+  date.style.top = `calc(${p.top} + 140px)`;
+  date.style.transform = "translate(-50%,0)";
+
+}
+
+function showScreenSaver(mode){
+
+  const saver = document.getElementById("screenSaver");
+  saver.classList.add("show");
+
+  if(mode === "night"){
+    saver.style.background = "#000000";
+    saver.style.color = "#ffffff";
+    document.getElementById("screenSaverDate").style.color =
+      "#cbd5e1";
+  }else{
+    saver.style.background = "#ffffff";
+    saver.style.color = "#111827";
+    document.getElementById("screenSaverDate").style.color =
+      "#374151";
+  }
+
+  updateScreenSaverClock();
+
+}
+
+function hideScreenSaver(){
+
+  const saver = document.getElementById("screenSaver");
+  saver.classList.remove("show");
+
+}
+
+function checkScreenSaver(){
+
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const second = now.getSeconds();
+
+  // 夜間
+  if(hour >= 1 && hour < 7){
+    showScreenSaver("night");
+    return;
+  }
+
+  // 30分ごと
+  if(
+    (minute === 0 || minute === 30) &&
+    second < 30
+  ){
+    showScreenSaver("day");
+  }else{
+    hideScreenSaver();
+  }
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  updateScreenSaverClock();
+  checkScreenSaver();
+  initNoticeLoop();
+
+  loadData();
+  loadWeather();
+  loadOperationalWeather();
+  rotateInfoPanel();
+
+  setInterval(updateScreenSaverClock,1000);
+  setInterval(checkScreenSaver,1000);
+
+  // 搬入出予定・納品引取は30秒ごとに更新
+  setInterval(loadData,30000);
+
+  // 天気・暑さ指数・雨雲情報は10分ごとに更新
+  setInterval(loadWeather,600000);
+  setInterval(loadOperationalWeather,600000);
+
+  // 熱中症情報と雨雲情報を15秒ごとに切替
+  setInterval(rotateInfoPanel,15000);
+
+  // ブラウザ復帰時にinformationテロップを再起動
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden && noticeInitialized){
+      applyNoticeText(true);
+    }
+  });
+
+  // 長時間運用で停止しないよう30分ごとに再起動
+  setInterval(() => {
+    if(noticeInitialized){
+      applyNoticeText(true);
+    }
+  }, 30 * 60 * 1000);
+
+});
+
+</script>
+
+<div id="screenSaver">
+  <div id="screenSaverClock"></div>
+  <div id="screenSaverDate"></div>
+</div>
+
+
+
+
+
+</body>
+</html>
